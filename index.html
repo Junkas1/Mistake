@@ -265,10 +265,10 @@
 
 <script>
 /**
- * MISTAKE - RELOADED (GLOBAL LEADERBOARD ENTEGRASYONU)
+ * MISTAKE - RELOADED (GLOBAL LEADERBOARD & LAZER ENTEGRASYONU)
  */
 
-// ✅ DENO DEPLOY URL'NİZ BURAYA EKLENMİŞTİR
+// ✅ DENO DEPLOY URL'NİZ BURADA
 const DENO_API_URL = 'https://junkas1-mistake-68.deno.dev'; 
 
 const KELIMELER = [
@@ -354,6 +354,7 @@ let state = {
     wordsCompleted: 0,
     activeWords: [],
     particles: [],
+    lasers: [], // 🔴 YENİ: Aktif lazerleri tutar
     timeScale: 1.0,
     lastTime: 0,
     spawnTimer: 0
@@ -374,6 +375,47 @@ function getErrorMultiplier() {
 }
 
 // --- SINIFLAR ---
+
+// 🔴 YENİ: Lazer Sınıfı
+class Laser {
+    constructor(startX, startY, targetX, targetY) {
+        this.x = startX;
+        this.y = targetY; // Lazerin dikeyde başladığı yer (Yatay atış için alt merkez)
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.speed = 40; // Lazer hızı (piksel/frame)
+        
+        // Hedefe doğru yönü hesapla
+        const dx = targetX - startX;
+        const dy = targetY - startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+        this.life = dist; // Kalan mesafe (Kullanılmayacak, çarpışma ile silinecek)
+    }
+    
+    update(dt) {
+        const moveDist = this.speed * dt;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.life -= moveDist;
+        return this.life <= 0; // Hedefe ulaştı mı?
+    }
+    
+    draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        // Lazerin kuyruk uzunluğunu belirle
+        ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+        ctx.strokeStyle = '#ff0055'; // Kırmızı neon rengi
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#ff0055';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+}
+
 class Particle {
     constructor(x, y, color, type) {
         this.x = x; this.y = y; this.type = type;
@@ -421,8 +463,13 @@ class Word {
         this.index = 0;
         ctx.font = "bold 30px Orbitron";
         this.width = ctx.measureText(text).width;
+        
+        // ✅ REVİZYON: X koordinatını Ekran sınırları içinde rastgele ayarla
         this.x = Math.random() * (w - this.width - 100) + 50;
-        this.y = -40; // Kelimeler ekranın üstünden başlar
+        
+        // ✅ REVİZYON: Kelimenin her zaman ekranın üstünden başlaması için Y koordinatı
+        this.y = -50; 
+        
         this.speed = 1.5 + (state.level * 0.15);
     }
     update(dt) {
@@ -480,6 +527,7 @@ function initGame() {
     state.wordsCompleted = 0;
     state.activeWords = [];
     state.particles = [];
+    state.lasers = []; // Lazerler temizlenir
     state.timeScale = 1.0;
     state.spawnTimer = 0;
     
@@ -570,12 +618,24 @@ function loop(timestamp) {
     }
 
     state.activeWords.forEach(word => { word.update(dt); word.draw(); });
+    
+    // 🔴 Lazerleri güncelle ve çiz
+    for (let i = state.lasers.length - 1; i >= 0; i--) {
+        const laser = state.lasers[i];
+        const hit = laser.update(dt);
+        if (hit) {
+            state.lasers.splice(i, 1); // Hedefe ulaştıysa sil
+        } else {
+            laser.draw();
+        }
+    }
+
     for (let i = state.particles.length - 1; i >= 0; i--) {
         const p = state.particles[i]; p.update(dt); p.draw();
         if (p.life <= 0) state.particles.splice(i, 1);
     }
 
-    if (state.timeScale > 0.001 || state.particles.length > 0) requestAnimationFrame(loop);
+    if (state.timeScale > 0.001 || state.particles.length > 0 || state.lasers.length > 0) requestAnimationFrame(loop);
 }
 
 // --- KLAVYE KONTROLÜ ---
@@ -588,6 +648,22 @@ document.addEventListener('keydown', (e) => {
     if (targets.length > 0) {
         targets.sort((a, b) => b.y - a.y);
         const target = targets[0];
+        
+        // *** 🔴 LAZERİ TETİKLEME KODU BAŞLANGICI ***
+        // 1. Lazerin başlangıç noktası (Ekranın alt merkezi)
+        const startX = w / 2;
+        const startY = h;
+        
+        // 2. Lazerin hedef noktası (Kelimenin vurulacak harfinin konumu)
+        ctx.font = "bold 30px Orbitron";
+        const targetCharWidth = ctx.measureText(target.text.substring(0, target.index)).width;
+        
+        const targetX = target.x + targetCharWidth + ctx.measureText(e.key).width / 2;
+        const targetY = target.y + 15; // Kelimenin ortası
+
+        state.lasers.push(new Laser(startX, startY, targetX, targetY));
+        // *** LAZERİ TETİKLEME KODU BİTİŞİ ***
+
         target.index++;
         playSound('hit');
         
@@ -639,7 +715,7 @@ async function saveGlobalScore() {
 
     const scoreData = {
         nick: nick.substring(0, 12),
-        skor: Math.floor(state.score), // Skorun tam sayı olması önemli
+        skor: Math.floor(state.score),
         errors: state.errors,
         level: state.level,
     };
