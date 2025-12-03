@@ -232,7 +232,7 @@
             <button id="btn-start" class="primary">BAŞLA</button>
         </div>
         <div class="right-panel">
-            <div class="lb-header">SIRALAMA</div>
+            <div class="lb-header">GLOBAL SIRALAMA</div>
             <div id="leaderboard-box">
                 <div style="text-align:center; color:#666; padding:20px;">Yükleniyor...</div>
             </div>
@@ -265,11 +265,12 @@
 
 <script>
 /**
- * MISTAKE - RELOADED
+ * MISTAKE - RELOADED (GLOBAL LEADERBOARD ENTEGRASYONU)
  */
 
-// --- SABİTLER VE AYARLAR ---
-const STORAGE_KEY = 'mistake_game_scores'; 
+// ✅ DENO DEPLOY URL'NİZ BURAYA EKLENMİŞTİR
+const DENO_API_URL = 'https://junkas1-mistake-68.deno.dev'; 
+
 const KELIMELER = [
     "masa","sandalye","bilgisayar","telefon","kalem","defter","kitap","çanta","lamba","ayna",
     "bardak","tabak","çatal","kaşık","bıçak","televizyon","kumanda","yastık","yorgan","çarşaf",
@@ -367,7 +368,6 @@ resize();
 
 /**
  * Hata sayısına bağlı kümülatif çarpanı hesaplar.
- * Her hata için hız ve puan 1.05x artar.
  */
 function getErrorMultiplier() {
     return Math.pow(1.05, state.errors);
@@ -427,7 +427,6 @@ class Word {
     }
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
-        // Hız çarpanı ile kelime düşüşü
         this.y += this.speed * dt * state.timeScale * errorMultiplier; 
         
         // Lazer hizası: h - 100
@@ -489,7 +488,6 @@ function initGame() {
     document.getElementById('go-content').classList.remove('visible');
     document.getElementById('hud').style.display = 'flex';
     
-    // Kaydet butonunu yeniden etkinleştir
     document.getElementById('btn-save').disabled = false;
     document.getElementById('btn-save').innerText = "KAYDET";
     
@@ -564,7 +562,6 @@ function loop(timestamp) {
     if (!state.gameOver) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
-        // Hata çarpanı ile spawn hızı artırılıyor
         const spawnRate = (90 - (state.level * 2)) / errorMultiplier;
         if (state.spawnTimer > Math.max(30, spawnRate)) {
             spawnWord();
@@ -596,7 +593,6 @@ document.addEventListener('keydown', (e) => {
         
         if (target.index >= target.text.length) {
             const errorMultiplier = getErrorMultiplier();
-            // Puan çarpanı ile skor artışı
             state.score += 10 * state.level * errorMultiplier;
             state.wordsCompleted++;
             target.explodeAsSand();
@@ -618,15 +614,67 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// --- LOCAL STORAGE SIRALAMA SİSTEMİ ---
-function getLocalScores() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+// --- 🌎 GLOBAL SIRALAMA SİSTEMİ (DENO API) ---
+
+async function getGlobalScores() {
+    try {
+        const response = await fetch(`${DENO_API_URL}/scores`);
+        if (!response.ok) throw new Error(`API hatası: Skorlar okunamadı (${response.status}).`);
+        
+        const scores = await response.json();
+        return scores;
+    } catch (error) {
+        console.error("Global skoru çekerken hata:", error);
+        return []; 
+    }
 }
 
-function updateLeaderboardUI() {
-    const scores = getLocalScores();
+async function saveGlobalScore() {
+    const nickInput = document.getElementById('player-nick');
+    const nick = nickInput.value.trim() || 'Anonim';
+    const btn = document.getElementById('btn-save');
+
+    if(btn.disabled) return;
+    btn.disabled = true;
+
+    const scoreData = {
+        nick: nick.substring(0, 12),
+        skor: Math.floor(state.score), // Skorun tam sayı olması önemli
+        errors: state.errors,
+        level: state.level,
+    };
+    
+    try {
+        const response = await fetch(`${DENO_API_URL}/score`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(scoreData)
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            btn.innerText = "KAYDEDİLDİ ✅";
+            updateLeaderboardUI(); 
+        } else {
+            btn.innerText = `KAYIT HATA: ${result.message || 'Bilinmiyor'}`;
+            btn.style.color = 'yellow';
+            btn.style.borderColor = 'yellow';
+        }
+    } catch (e) {
+        console.error("Skor kaydetme hatası:", e);
+        btn.innerText = "BAĞLANTI HATA 🔗";
+        btn.style.color = 'yellow';
+        btn.style.borderColor = 'yellow';
+    }
+}
+
+async function updateLeaderboardUI() {
     const lbBox = document.getElementById('leaderboard-box');
+    lbBox.innerHTML = '<div style="text-align:center; padding:20px; color:#666">GLOBAL SIRALAMA YÜKLENİYOR...</div>';
+    
+    const scores = await getGlobalScores();
+
     lbBox.innerHTML = '';
     
     // Başlık satırı
@@ -642,64 +690,30 @@ function updateLeaderboardUI() {
     lbBox.appendChild(headerDiv);
 
     if(scores.length === 0) {
-        lbBox.innerHTML += '<div style="text-align:center; padding:20px; color:#666">Henüz kayıt yok.</div>';
+        lbBox.innerHTML += '<div style="text-align:center; padding:20px; color:#666">Global kayıt yok.</div>';
         return;
     }
 
-    scores.sort((a, b) => b.skor - a.skor); // Puan yüksekliğine göre sırala
-    
     scores.slice(0, 100).forEach((entry, i) => {
         const div = document.createElement('div');
         div.className = 'lb-row';
-        // Hata ve Bölüm bilgileri (eski kayıtlarda bu veriler eksik olabilir, default değer atıyoruz)
-        const entryErrors = entry.errors !== undefined ? entry.errors : '-';
-        const entryLevel = entry.level !== undefined ? entry.level : '-';
-
         div.innerHTML = `
             <div class="lb-rank">${i+1}.</div>
             <div class="lb-nick">${entry.nick}</div>
             <div class="lb-score">${Math.floor(entry.skor).toLocaleString()}</div>
-            <div class="lb-errors">${entryErrors}</div>
-            <div class="lb-level">${entryLevel}</div>
+            <div class="lb-errors">${entry.errors}</div>
+            <div class="lb-level">${entry.level}</div>
         `;
         lbBox.appendChild(div);
     });
 }
 
-function saveLocalScore() {
-    const nickInput = document.getElementById('player-nick');
-    const nick = nickInput.value.trim() || 'Anonim';
-    const btn = document.getElementById('btn-save');
-    
-    // Zaten kaydedilmişse tekrar kaydetme
-    if(btn.disabled) return;
-
-    btn.disabled = true;
-    
-    // Yeni kayıt formatı: skor, hata ve bölüm bilgileri ekleniyor
-    const newScore = {
-        nick: nick.substring(0, 12),
-        skor: state.score,
-        errors: state.errors,
-        level: state.level,
-        tarih: Date.now()
-    };
-
-    let scores = getLocalScores();
-    scores.push(newScore);
-    
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
-    
-    btn.innerText = "KAYDEDİLDİ";
-    updateLeaderboardUI(); // Kayıttan sonra tabloyu hemen güncelle
-}
-
 // --- EVENT LISTENERS ---
 document.getElementById('btn-start').addEventListener('click', initGame);
-document.getElementById('btn-save').addEventListener('click', saveLocalScore);
-document.getElementById('btn-menu').addEventListener('click', () => location.reload()); // Menüye dön, sayfayı yeniden yükle
+document.getElementById('btn-save').addEventListener('click', saveGlobalScore);
+document.getElementById('btn-menu').addEventListener('click', () => location.reload()); 
 
-// Başlat
+// Başlat (Sıralamayı yükle)
 updateLeaderboardUI();
 
 </script>
