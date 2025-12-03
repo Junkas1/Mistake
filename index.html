@@ -265,7 +265,7 @@
 
 <script>
 /**
- * MISTAKE - RELOADED (GLOBAL LEADERBOARD & LAZER ENTEGRASYONU)
+ * MISTAKE - RELOADED (GLOBAL LEADERBOARD & LAZER VURUŞ EFEKTİ)
  */
 
 // ✅ DENO DEPLOY URL'NİZ BURADA
@@ -378,20 +378,22 @@ function getErrorMultiplier() {
 
 // 🔴 Lazer Sınıfı
 class Laser {
-    constructor(startX, startY, targetX, targetY) {
+    constructor(startX, startY, targetX, targetY, targetWord, targetIndex) {
         this.x = startX;
         this.y = startY; 
         this.targetX = targetX;
         this.targetY = targetY;
+        this.targetWord = targetWord; // Vurulacak kelime
+        this.targetIndex = targetIndex; // Vurulacak harfin indeksi
         this.speed = 40; 
         
-        // Hedefe doğru yönü hesapla
         const dx = targetX - startX;
         const dy = targetY - startY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         this.vx = (dx / dist) * this.speed;
         this.vy = (dy / dist) * this.speed;
         this.life = dist; 
+        this.initialLife = dist;
     }
     
     update(dt) {
@@ -399,15 +401,20 @@ class Laser {
         this.x += this.vx * dt;
         this.y += this.vy * dt;
         this.life -= moveDist;
-        return this.life <= 0; // Hedefe ulaştı mı?
+        
+        // Hedefe ulaşıldıysa
+        if (this.life <= this.initialLife * 0.05) { // Hedefe çok yaklaştıysa
+            this.targetWord.hitEffect[this.targetIndex] = 10; // Harfi 10 frame/tick boyunca kırmızı yap
+            return true; 
+        }
+        return false;
     }
     
     draw() {
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
-        // Lazerin kuyruk uzunluğunu belirle
         ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
-        ctx.strokeStyle = '#ff0055'; // Kırmızı neon rengi
+        ctx.strokeStyle = '#ff0055'; 
         ctx.lineWidth = 3;
         ctx.shadowColor = '#ff0055';
         ctx.shadowBlur = 10;
@@ -417,6 +424,7 @@ class Laser {
 }
 
 class Particle {
+    // ... (Particle sınıfı önceki gibi) ...
     constructor(x, y, color, type) {
         this.x = x; this.y = y; this.type = type;
         this.life = 1.0;
@@ -464,18 +472,25 @@ class Word {
         ctx.font = "bold 30px Orbitron";
         this.width = ctx.measureText(text).width;
         
-        // ✅ REVİZYON 1: X koordinatını Ekran sınırları içinde rastgele ayarla
         this.x = Math.random() * (w - this.width - 100) + 50;
-        
-        // ✅ REVİZYON 2: Kelimenin her zaman ekranın üstünden başlaması için Y koordinatı
         this.y = -50; 
         
         this.speed = 1.5 + (state.level * 0.15);
+
+        // ✅ YENİ: Vurulan harflerin parlama süresini tutar (0: sönük, >0: parlak)
+        this.hitEffect = new Array(this.text.length).fill(0);
     }
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
         this.y += this.speed * dt * state.timeScale * errorMultiplier; 
         
+        // Vurulan harflerin parlama süresini azalt
+        for(let i=0; i<this.hitEffect.length; i++) {
+            if(this.hitEffect[i] > 0) {
+                this.hitEffect[i] -= 1 * state.timeScale;
+            }
+        }
+
         // Lazer hizası: h - 100
         if (!state.gameOver && this.y > h - 120) {
             triggerGameOver(this.x + this.width/2, h - 100);
@@ -484,16 +499,36 @@ class Word {
     draw() {
         ctx.font = "bold 30px Orbitron";
         ctx.textBaseline = "top";
-        ctx.fillStyle = "#ff0055";
-        ctx.shadowColor = "#ff0055"; ctx.shadowBlur = 15;
-        const written = this.text.substring(0, this.index);
-        ctx.fillText(written, this.x, this.y);
-        const writtenWidth = ctx.measureText(written).width;
-        ctx.fillStyle = "#ffffff";
-        ctx.shadowBlur = 0;
-        ctx.fillText(this.text.substring(this.index), this.x + writtenWidth, this.y);
+        
+        let currentX = this.x;
+
+        for (let i = 0; i < this.text.length; i++) {
+            const char = this.text[i];
+            const charW = ctx.measureText(char).width;
+            
+            if (i < this.index) {
+                // Önceden yazılmış, tamamlanmış kısım (Neon Pembe)
+                ctx.fillStyle = "#ff0055";
+                ctx.shadowColor = "#ff0055"; 
+                ctx.shadowBlur = 15;
+            } else if (this.hitEffect[i] > 0) {
+                 // ✅ LAZER VURUŞU: Geçici Kırmızı Parlama
+                ctx.fillStyle = `rgba(255, 51, 51, ${Math.min(1, this.hitEffect[i]/10)})`; // Kırmızı ve azalan opaklık
+                ctx.shadowColor = `rgba(255, 51, 51, ${Math.min(1, this.hitEffect[i]/10)})`; 
+                ctx.shadowBlur = 25;
+            } else {
+                // Henüz yazılmamış kısım (Beyaz)
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowBlur = 0;
+            }
+            
+            ctx.fillText(char, currentX, this.y);
+            currentX += charW;
+            ctx.shadowBlur = 0; // Gölgeyi sıfırla ki diğer harfleri etkilemesin
+        }
     }
     explodeAsSand() {
+        // ... (Mevcut kod) ...
         ctx.font = "bold 30px Orbitron";
         let currentX = this.x;
         for (let i = 0; i < this.text.length; i++) {
@@ -507,7 +542,7 @@ class Word {
 }
 
 // --- OYUN FONKSİYONLARI ---
-
+// ... (updateHUD, initGame, nextLevel, triggerGameOver, spawnWord fonksiyonları önceki gibi) ...
 function updateHUD() {
     const currentMultiplier = getErrorMultiplier();
     document.getElementById('hud-score').innerText = Math.floor(state.score).toLocaleString();
@@ -529,6 +564,7 @@ function initGame() {
     state.particles = [];
     state.lasers = []; 
     state.timeScale = 1.0;
+    state.lastTime = 0;
     state.spawnTimer = 0;
     
     document.getElementById('start-screen').classList.remove('active');
@@ -648,31 +684,21 @@ document.addEventListener('keydown', (e) => {
     if (targets.length > 0) {
         targets.sort((a, b) => b.y - a.y);
         const target = targets[0];
+        const currentHitIndex = target.index; // Vurulacak harfin indeksi
         
-        // ** 🔴 LAZERİ TETİKLEME KODU BAŞLANGICI **
-        
-        // 1. Lazerin başlangıç noktası: Ekranın Alt Merkezi (Lazer çizgisi üzerindeki nokta)
-        const startX = w / 2;
-        const startY = h - 100; // Lazer çizgisinin y pozisyonu
-        
-        // 2. Lazerin hedef noktası: Harfin tam merkezi
+        // ** 🔴 LAZERİ TETİKLEME KODU **
         ctx.font = "bold 30px Orbitron";
-        
-        // Vurulacak harfe kadar olan metnin genişliği
-        let precedingText = target.text.substring(0, target.index);
+        let precedingText = target.text.substring(0, currentHitIndex);
         const precedingWidth = ctx.measureText(precedingText).width;
-        
-        // Vurulacak harfin genişliği
         const charWidth = ctx.measureText(e.key).width;
         
-        // Harfin X pozisyonu (Kelime başlangıcı + Önceki metin genişliği + Harf genişliğinin yarısı)
+        const startX = w / 2;
+        const startY = h - 100;
         const targetX = target.x + precedingWidth + charWidth / 2;
-        
-        // Harfin Y pozisyonu (Kelime y'si + Font büyüklüğünün yarısı, yani 30px/2 = 15px)
         const targetY = target.y + 15; 
 
-        state.lasers.push(new Laser(startX, startY, targetX, targetY));
-        // ** LAZERİ TETİKLEME KODU BİTİŞİ **
+        // Lazer oluşturulurken hedef kelime ve harf indeksi bilgisi eklenir
+        state.lasers.push(new Laser(startX, startY, targetX, targetY, target, currentHitIndex));
 
         target.index++;
         playSound('hit');
