@@ -1,119 +1,707 @@
-<script>
-// ... (SESLER VE PARÇACIK SINIFLARI AYNI KALIR) ...
-
-// ====== GLOBAL BACKEND & SOL TABLO ======
-const API_URL = "https://mistake-leaderboard.deno.dev";
-
-async function skorGonder(d){
-    try{
-        await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
-        await sideTabloGuncelle();
-    }catch(e){console.error(e);}
-}
-
-async function sideTabloGuncelle(){
-    const ul = document.getElementById('sideList');
-    const leaderboard = document.getElementById('sideLeaderboard');
-    
-    // Tabloyu sadece başlangıç ekranı (start) aktifse görünür yap
-    if(document.getElementById('start').classList.contains('active')) {
-        leaderboard.style.display = 'block';
-    } else {
-        leaderboard.style.display = 'none';
-    }
-    
-    ul.innerHTML = '<li style="text-align:center; display:block; color:#00ffcc; font-weight:bold;">Yükleniyor...</li>';
-    try {
-        const r = await fetch(API_URL);
-        if (!r.ok) throw new Error(`HTTP Error! Status: ${r.status}`);
-        const data = await r.json();
-        const top20 = data.slice(0, 20);
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MISTAKE - RELOADED</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap');
         
-        ul.innerHTML = top20.map((e,i) => `
-            <li>
-                <span>${(i+1).toString().padStart(2, '0')}. ${e.nick.substring(0,10)}</span>
-                <span style="color:#00ffcc">${e.skor.toLocaleString()}</span>
-            </li>
-        `).join('');
+        :root {
+            --neon-pink: #ff0055;
+            --neon-blue: #00f3ff;
+            --neon-red: #ff3333;
+            --bg-dark: #050505;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         
-        if (top20.length === 0) {
-             ul.innerHTML = '<li style="text-align:center; display:block; color:#666">Henüz skor yok! İlk sen ol.</li>';
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
+
+        /* UI KATMANLARI */
+        #ui-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; pointer-events: none;
+            display: flex; flex-direction: column;
+        }
+
+        .screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; pointer-events: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .screen.active { display: flex; }
+
+        /* --- BAŞLANGIÇ EKRANI --- */
+        #start-screen {
+            flex-direction: row;
+            background: radial-gradient(circle at center, rgba(20,0,10,0.8), #000);
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .right-panel {
+            width: 450px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex; flex-direction: column;
+            padding: 20px;
+            border-left: 2px solid var(--neon-blue);
+        }
+
+        h1 {
+            font-size: clamp(60px, 8vw, 120px);
+            background: linear-gradient(to bottom, #fff, var(--neon-pink));
+            -webkit-background-clip: text; color: transparent;
+            text-shadow: 0 0 50px var(--neon-pink);
+            margin-bottom: 30px;
+            animation: pulse 3s infinite;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 30px #fff;
+            transform: scale(1.05);
+        }
+
+        button.primary {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+        button.primary:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 50px var(--neon-pink);
+        }
+
+        /* --- SIRALAMA TABLOSU --- */
+        #leaderboard-box {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid var(--neon-blue);
+            background: rgba(0, 243, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        #leaderboard-box::-webkit-scrollbar { width: 8px; }
+        #leaderboard-box::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+
+        .lb-header {
+            color: var(--neon-blue);
+            font-size: 24px; text-align: center; margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-blue);
+            border-bottom: 1px solid rgba(0,243,255,0.3);
+            padding-bottom: 10px;
+            font-weight: bold;
         }
         
-    } catch(e) {
-        console.error("Sıralama yüklenirken hata:", e);
-        ul.innerHTML = '<li style="text-align:center; display:block; color:#ff4444; font-weight:bold;">BAĞLANTI HATASI</li>';
+        .lb-grid-header {
+            display: grid;
+            grid-template-columns: 40px 1fr 80px 60px 60px; /* Rütbe, İsim, Puan, Hata, Bölüm */
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .lb-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 80px 60px 60px;
+            padding: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .lb-rank { color: var(--neon-pink); font-weight: bold; }
+        .lb-nick { color: #ddd; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .lb-score { color: var(--neon-blue); text-align: right; font-weight: bold; }
+        .lb-errors { color: var(--neon-red); text-align: center; }
+        .lb-level { color: #00f3ff; text-align: center; }
+
+
+        /* --- OYUN SONU EKRANI --- */
+        #game-over-screen {
+            flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(0,0,0,0);
+            transition: background 2s;
+        }
+        
+        .go-content {
+            background: rgba(10, 10, 10, 0.95);
+            border: 2px solid var(--neon-pink);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255,0,85,0.4);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: 1s;
+            min-width: 400px;
+        }
+        .go-content.visible { transform: scale(1); opacity: 1; }
+
+        input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--neon-blue);
+            color: #fff;
+            padding: 15px;
+            font-size: 20px;
+            font-family: 'Orbitron';
+            text-align: center;
+            margin: 20px 0;
+            width: 100%;
+            outline: none;
+        }
+        
+        .button-group { display: flex; gap: 10px; justify-content: center; }
+
+        /* --- HUD (Oyun İçi) --- */
+        #hud {
+            position: absolute; top: 0; left: 0; width: 100%;
+            padding: 20px;
+            display: flex; justify-content: space-between;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            display: none;
+        }
+        
+        .hud-box {
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            min-width: 150px; text-align: center;
+        }
+        
+        .multiplier { color: #ffeb3b; font-weight: bold; }
+        .error-count { color: #ff3333; font-weight: bold; }
+
+        /* Hata Animasyonu (Kırmızı Flash) */
+        #error-flash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            pointer-events: none; z-index: 5;
+            opacity: 0; transition: opacity 0.1s;
+        }
+
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<div id="error-flash"></div>
+
+<div id="ui-layer">
+    
+    <div id="start-screen" class="screen active">
+        <div class="left-panel">
+            <h1>MISTAKE</h1>
+            <button id="btn-start" class="primary">BAŞLA</button>
+        </div>
+        <div class="right-panel">
+            <div class="lb-header">SIRALAMA</div>
+            <div id="leaderboard-box">
+                <div style="text-align:center; color:#666; padding:20px;">Yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="hud">
+        <div class="hud-box" id="hud-level">BÖLÜM 1</div>
+        <div class="hud-box">PUAN: <span id="hud-score" style="color:var(--neon-blue)">0</span></div>
+        <div class="hud-box">HATA: <span id="hud-errors" class="error-count">0</span></div>
+        <div class="hud-box">ÇARPAN: <span id="hud-multiplier" class="multiplier">1.00x</span></div>
+        <div class="hud-box" id="hud-progress">0 / 10</div>
+    </div>
+
+    <div id="game-over-screen" class="screen">
+        <div class="go-content" id="go-content">
+            <h2 style="font-size: 40px; color: var(--neon-pink); margin-bottom: 20px;">OYUN BİTTİ</h2>
+            <p style="font-size: 24px; margin-bottom: 10px;">TOPLAM PUAN: <span id="final-score" style="color:var(--neon-blue)">0</span></p>
+            <p style="font-size: 16px; color:#aaa;">BÖLÜM: <span id="final-level" style="color:#00f3ff">1</span> | HATA: <span id="final-errors" style="color:red">0</span> | ÇARPAN: <span id="final-multiplier">1.00x</span></p>
+            
+            <input type="text" id="player-nick" maxlength="12" placeholder="İSİM GİRİNİZ">
+            
+            <div class="button-group">
+                <button id="btn-save" class="primary">KAYDET</button>
+                <button id="btn-menu">MENÜYE DÖN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/**
+ * MISTAKE - RELOADED
+ */
+
+// --- SABİTLER VE AYARLAR ---
+const STORAGE_KEY = 'mistake_game_scores'; 
+const KELIMELER = [
+    "masa","sandalye","bilgisayar","telefon","kalem","defter","kitap","çanta","lamba","ayna",
+    "bardak","tabak","çatal","kaşık","bıçak","televizyon","kumanda","yastık","yorgan","çarşaf",
+    "halı","perde","dolap","çekmece","kıyafet","gömlek","pantolon","ceket","ayakkabı","çorap",
+    "gözlük","saat","takvim","resim","çerçeve","vazo","çiçek","saksı","anahtar","kilit",
+    "kapı","pencere","duvar","tavan","zemin","apartman","balkon","bahçe","kaldırım","sokak",
+    "cadde","meydan","park","bank","ağaç","yaprak","güneş","bulut","yağmur","şemsiye",
+    "kar","rüzgar","deniz","dalga","kum","sahil","gemi","tekne","iskele","balık",
+    "martı","kedi","köpek","kuş","kelebek","böcek","arı","sinek","örümcek","yılan",
+    "araba","otobüs","kamyon","bisiklet","motosiklet","uçak","helikopter","tren","metro","istasyon",
+    "bilet","cüzdan","para","kart","banka","market","poşet","ekmek","peynir","zeytin",
+    "yumurta","süt","yoğurt","elma","armut","karpuz","kavun","çilek","muz","portakal",
+    "limon","soğan","patates","domates","biber","tuz","şeker","un","yağ","su",
+    "kahve","çay","meyve","sebze","yemek","tatlı","pasta","kurabiye","çikolata","dondurma",
+    "okul","sınıf","sıra","tahta","tebeşir","silgi","kalemtıraş","cetvel","harita","küre",
+    "öğrenci","öğretmen","müdür","ders","sınav","not","karne","diploma","üniversite","fakülte",
+    "doktor","hemşire","hasta","ilaç","eczane","hastane","ambulans","sedye","sargı","yara",
+    "polis","asker","itfaiye","zabıta","bekçi","hırsız","suç","ceza","hapishane","mahkeme",
+    "avukat","hakim","savcı","kanun","yasa","devlet","millet","bayrak","vatan","toprak",
+    "müzik","şarkı","nota","gitar","piyano","keman","davul","flüt","sahne","konser",
+    "sinema","tiyatro","film","oyun","sanat","resim","heykel","sergi","müze","tarih",
+    "bilim","teknoloji","uzay","gezegen","yıldız","ay","dünya","mars","roket","uydu",
+    "robot","makine","motor","benzin","mazot","gaz","elektrik","kablo","priz","ampul",
+    "batarya","pil","şarj","ekran","klavye","fare","hoparlör","mikrofon","kamera","internet",
+    "mesaj","posta","mektup","zarf","pul","kutu","koli","bant","makas","yapıştırıcı"
+];
+
+// --- SESLER (Sentetik) ---
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playSound(type) {
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    if (type === 'hit') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
+    } else if (type === 'error') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+    } else if (type === 'complete') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.linearRampToValueAtTime(800, now + 0.15);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+    } else if (type === 'explosion') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, now);
+        osc.frequency.exponentialRampToValueAtTime(10, now + 1.0);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+        osc.start(now); osc.stop(now + 1.0);
     }
 }
-// Başlangıçta tabloyu çek ve görünür yap
-sideTabloGuncelle();
 
-// ... (KELİME SINIFI, PARTİKÜL SINIFI VE OYUN DEĞİŞKENLERİ AYNI KALIR) ...
+// --- CANVAS & STATE ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
 
-// ====== BUTONLAR (GÜNCELLENMİŞ) ======
-document.getElementById('basla').onclick=()=>{
-    document.getElementById('start').classList.remove('active');
-    document.getElementById('sideLeaderboard').style.display = 'none'; // OYUN BAŞLAYINCA KESİNLİKLE GİZLE
-    initGame();
+let state = {
+    active: false,
+    gameOver: false,
+    level: 1,
+    score: 0,
+    errors: 0,
+    wordsTarget: 10,
+    wordsCompleted: 0,
+    activeWords: [],
+    particles: [],
+    timeScale: 1.0,
+    lastTime: 0,
+    spawnTimer: 0
+};
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+/**
+ * Hata sayısına bağlı kümülatif çarpanı hesaplar.
+ * Her hata için hız ve puan 1.05x artar.
+ */
+function getErrorMultiplier() {
+    return Math.pow(1.05, state.errors);
 }
 
-document.getElementById('nextLevel').onclick=()=>{
-    // ... (AYNI KALIR) ...
+// --- SINIFLAR ---
+class Particle {
+    constructor(x, y, color, type) {
+        this.x = x; this.y = y; this.type = type;
+        this.life = 1.0;
+        if (type === 'sand') {
+            this.vx = (Math.random() - 0.5) * 2;
+            this.vy = Math.random() * 3 + 2;
+            this.size = Math.random() * 3 + 1;
+            this.color = color;
+            this.gravity = 0.2;
+        } else { // fire
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 10 + 2;
+            this.vx = Math.cos(angle) * speed;
+            this.vy = Math.sin(angle) * speed;
+            this.size = Math.random() * 6 + 2;
+            this.color = `hsl(${Math.random()*40 + 340}, 100%, 50%)`;
+            this.gravity = 0.1;
+            this.friction = 0.95;
+        }
+    }
+    update(dt) {
+        const t = dt * state.timeScale;
+        this.x += this.vx * t;
+        this.y += this.vy * t;
+        if (this.type === 'sand') {
+            this.vy += this.gravity * t;
+            this.life -= 0.015 * t;
+        } else {
+            this.vx *= this.friction; this.vy *= this.friction;
+            this.life -= 0.02 * state.timeScale;
+        }
+    }
+    draw() {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.rect(this.x, this.y, this.size, this.size); ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 }
 
-function initGame(){
-    // ... (AYNI KALIR) ...
+class Word {
+    constructor(text) {
+        this.text = text;
+        this.index = 0;
+        ctx.font = "bold 30px Orbitron";
+        this.width = ctx.measureText(text).width;
+        this.x = Math.random() * (w - this.width - 100) + 50;
+        this.y = -40; // Kelimeler ekranın üstünden başlar
+        this.speed = 1.5 + (state.level * 0.15);
+    }
+    update(dt) {
+        const errorMultiplier = getErrorMultiplier();
+        // Hız çarpanı ile kelime düşüşü
+        this.y += this.speed * dt * state.timeScale * errorMultiplier; 
+        
+        // Lazer hizası: h - 100
+        if (!state.gameOver && this.y > h - 120) {
+            triggerGameOver(this.x + this.width/2, h - 100);
+        }
+    }
+    draw() {
+        ctx.font = "bold 30px Orbitron";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "#ff0055";
+        ctx.shadowColor = "#ff0055"; ctx.shadowBlur = 15;
+        const written = this.text.substring(0, this.index);
+        ctx.fillText(written, this.x, this.y);
+        const writtenWidth = ctx.measureText(written).width;
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowBlur = 0;
+        ctx.fillText(this.text.substring(this.index), this.x + writtenWidth, this.y);
+    }
+    explodeAsSand() {
+        ctx.font = "bold 30px Orbitron";
+        let currentX = this.x;
+        for (let i = 0; i < this.text.length; i++) {
+            const charW = ctx.measureText(this.text[i]).width;
+            for(let p=0; p<6; p++) {
+                state.particles.push(new Particle(currentX + Math.random() * charW, this.y + Math.random()*20, "#00f3ff", 'sand'));
+            }
+            currentX += charW;
+        }
+    }
 }
 
-// ... (KLAVYE, BOLUMTAMAM AYNI KALIR) ...
+// --- OYUN FONKSİYONLARI ---
 
-function oyunBitti(kelime){
-    if(isGameOver) return; 
-    isGameOver = true;
-    oyunBasladi = false;
-    oynat('gameover');
-    
-    // ... (AĞIR ÇEKİM VE FADE EFEKTİ AYNI KALIR) ...
-    
-    document.getElementById('toplamPuan').textContent=totalScore.toLocaleString();
-    // Oyun Bitti Ekranında görünmesine izin verilmiyor.
+function updateHUD() {
+    const currentMultiplier = getErrorMultiplier();
+    document.getElementById('hud-score').innerText = Math.floor(state.score).toLocaleString();
+    document.getElementById('hud-errors').innerText = state.errors;
+    document.getElementById('hud-multiplier').innerText = currentMultiplier.toFixed(2) + "x";
+    document.getElementById('hud-progress').innerText = `${state.wordsCompleted} / ${state.wordsTarget}`;
+    document.getElementById('hud-level').innerText = "BÖLÜM " + state.level;
 }
 
-// SADECE KAYDET, TABLO GÖSTERME (GÜNCELLENMİŞ)
-document.getElementById('gonder').addEventListener('click', async()=>{
-    const nick=document.getElementById('nick').value.trim()||'Anon';
-    const btn = document.getElementById('gonder');
-    btn.textContent = "KAYDEDİLİYOR...";
-    btn.disabled = true;
+function initGame() {
+    state.active = true;
+    state.gameOver = false;
+    state.level = 1;
+    state.score = 0;
+    state.errors = 0;
+    state.wordsTarget = 10;
+    state.wordsCompleted = 0;
+    state.activeWords = [];
+    state.particles = [];
+    state.timeScale = 1.0;
+    state.spawnTimer = 0;
     
-    await skorGonder({
-        nick:nick.substring(0,12),
-        skor:totalScore,
-        kelime:completedWordsTotal,
-        hata:hataSayisi,
-        level:sonTamamlananLevel
-    });
+    document.getElementById('start-screen').classList.remove('active');
+    document.getElementById('game-over-screen').classList.remove('active');
+    document.getElementById('go-content').classList.remove('visible');
+    document.getElementById('hud').style.display = 'flex';
     
-    alert("Skorun kaydedildi!");
+    // Kaydet butonunu yeniden etkinleştir
+    document.getElementById('btn-save').disabled = false;
+    document.getElementById('btn-save').innerText = "KAYDET";
     
-    // Oyun Bitti Ekranından Ana Menüye dön
-    document.getElementById('bitti').classList.remove('active');
-    document.getElementById('start').classList.add('active');
-    document.getElementById('sideLeaderboard').style.display = 'block'; // Ana Menüye dönünce göster
-    
-    // OYUNU TEMİZLE
-    initGame();
-    oyunBasladi = false;
-    isGameOver = false;
+    updateHUD();
+    requestAnimationFrame(loop);
+}
 
-    // Geri dönen kullanıcının HUD'unu temizle (Görünmeyecek ama sıfırlansın)
-    document.getElementById('puan').innerText = `PUAN: 0`;
-    document.getElementById('hataCarpan').innerHTML = `HATA: 0 | ÇARPAN: <span style="color:#ff0044">1.00x</span>`;
-    document.getElementById('levelInfo').innerText = `BÖLÜM 1 • 0/10`;
+function nextLevel() {
+    state.level++;
+    state.wordsTarget = 10 + (state.level - 1) * 4;
+    state.wordsCompleted = 0;
+    playSound('complete');
+    updateHUD();
+}
+
+function triggerGameOver(x, y) {
+    state.gameOver = true;
+    playSound('explosion');
+    for(let i=0; i<60; i++) state.particles.push(new Particle(x, y, null, 'fire'));
+    
+    document.getElementById('hud').style.display = 'none';
+    
+    const goScreen = document.getElementById('game-over-screen');
+    goScreen.style.background = "rgba(0,0,0,0.85)";
+    goScreen.classList.add('active');
+    
+    document.getElementById('final-score').innerText = Math.floor(state.score).toLocaleString();
+    document.getElementById('final-level').innerText = state.level;
+    document.getElementById('final-errors').innerText = state.errors;
+    document.getElementById('final-multiplier').innerText = getErrorMultiplier().toFixed(2) + "x";
+
+    setTimeout(() => { document.getElementById('go-content').classList.add('visible'); }, 1000);
+}
+
+function spawnWord() {
+    let candidate;
+    let attempts = 0;
+    do {
+        candidate = KELIMELER[Math.floor(Math.random() * KELIMELER.length)];
+        attempts++;
+    } while (state.activeWords.some(w => w.text === candidate) && attempts < 10);
+    state.activeWords.push(new Word(candidate));
+}
+
+// --- ANA DÖNGÜ & ÇİZİM ---
+function loop(timestamp) {
+    if (!state.active) return;
+    const dt = (timestamp - state.lastTime) / 16.66;
+    state.lastTime = timestamp;
+
+    if (state.gameOver) {
+        state.timeScale *= 0.95;
+        if (state.timeScale < 0.01) state.timeScale = 0;
+    }
+
+    ctx.clearRect(0, 0, w, h);
+
+    // LAZER ÇİZİMİ (Canvas üzerinde)
+    if(state.active && !state.gameOver) {
+        const laserY = h - 100;
+        ctx.beginPath();
+        ctx.moveTo(0, laserY);
+        ctx.lineTo(w, laserY);
+        ctx.strokeStyle = "#ff0055";
+        ctx.lineWidth = 3;
+        ctx.shadowColor = "#ff0055";
+        ctx.shadowBlur = 20;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+
+    if (!state.gameOver) {
+        state.spawnTimer += dt;
+        const errorMultiplier = getErrorMultiplier();
+        // Hata çarpanı ile spawn hızı artırılıyor
+        const spawnRate = (90 - (state.level * 2)) / errorMultiplier;
+        if (state.spawnTimer > Math.max(30, spawnRate)) {
+            spawnWord();
+            state.spawnTimer = 0;
+        }
+    }
+
+    state.activeWords.forEach(word => { word.update(dt); word.draw(); });
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+        const p = state.particles[i]; p.update(dt); p.draw();
+        if (p.life <= 0) state.particles.splice(i, 1);
+    }
+
+    if (state.timeScale > 0.001 || state.particles.length > 0) requestAnimationFrame(loop);
+}
+
+// --- KLAVYE KONTROLÜ ---
+document.addEventListener('keydown', (e) => {
+    if (!state.active || state.gameOver) return;
+    const key = e.key.toLowerCase();
+    
+    const targets = state.activeWords.filter(w => w.text[w.index] === key);
+
+    if (targets.length > 0) {
+        targets.sort((a, b) => b.y - a.y);
+        const target = targets[0];
+        target.index++;
+        playSound('hit');
+        
+        if (target.index >= target.text.length) {
+            const errorMultiplier = getErrorMultiplier();
+            // Puan çarpanı ile skor artışı
+            state.score += 10 * state.level * errorMultiplier;
+            state.wordsCompleted++;
+            target.explodeAsSand();
+            playSound('complete');
+            state.activeWords = state.activeWords.filter(w => w !== target);
+            if (state.wordsCompleted >= state.wordsTarget) nextLevel();
+        }
+        updateHUD();
+    } else {
+        // HATA YAPILDI
+        state.errors++; 
+        playSound('error');
+        updateHUD();
+        
+        // Kırmızı ekran efekti
+        const flash = document.getElementById('error-flash');
+        flash.style.opacity = 1;
+        setTimeout(() => flash.style.opacity = 0, 100);
+    }
 });
 
-// ... (MAIN LOOP AYNI KALIR) ...
+// --- LOCAL STORAGE SIRALAMA SİSTEMİ ---
+function getLocalScores() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+}
 
-loop();
+function updateLeaderboardUI() {
+    const scores = getLocalScores();
+    const lbBox = document.getElementById('leaderboard-box');
+    lbBox.innerHTML = '';
+    
+    // Başlık satırı
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'lb-grid-header';
+    headerDiv.innerHTML = `
+        <div style="text-align: left;">#</div>
+        <div style="text-align: left;">İSİM</div>
+        <div style="text-align: right;">PUAN</div>
+        <div style="text-align: center;">HATA</div>
+        <div style="text-align: center;">BÖLÜM</div>
+    `;
+    lbBox.appendChild(headerDiv);
+
+    if(scores.length === 0) {
+        lbBox.innerHTML += '<div style="text-align:center; padding:20px; color:#666">Henüz kayıt yok.</div>';
+        return;
+    }
+
+    scores.sort((a, b) => b.skor - a.skor); // Puan yüksekliğine göre sırala
+    
+    scores.slice(0, 100).forEach((entry, i) => {
+        const div = document.createElement('div');
+        div.className = 'lb-row';
+        // Hata ve Bölüm bilgileri (eski kayıtlarda bu veriler eksik olabilir, default değer atıyoruz)
+        const entryErrors = entry.errors !== undefined ? entry.errors : '-';
+        const entryLevel = entry.level !== undefined ? entry.level : '-';
+
+        div.innerHTML = `
+            <div class="lb-rank">${i+1}.</div>
+            <div class="lb-nick">${entry.nick}</div>
+            <div class="lb-score">${Math.floor(entry.skor).toLocaleString()}</div>
+            <div class="lb-errors">${entryErrors}</div>
+            <div class="lb-level">${entryLevel}</div>
+        `;
+        lbBox.appendChild(div);
+    });
+}
+
+function saveLocalScore() {
+    const nickInput = document.getElementById('player-nick');
+    const nick = nickInput.value.trim() || 'Anonim';
+    const btn = document.getElementById('btn-save');
+    
+    // Zaten kaydedilmişse tekrar kaydetme
+    if(btn.disabled) return;
+
+    btn.disabled = true;
+    
+    // Yeni kayıt formatı: skor, hata ve bölüm bilgileri ekleniyor
+    const newScore = {
+        nick: nick.substring(0, 12),
+        skor: state.score,
+        errors: state.errors,
+        level: state.level,
+        tarih: Date.now()
+    };
+
+    let scores = getLocalScores();
+    scores.push(newScore);
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
+    
+    btn.innerText = "KAYDEDİLDİ";
+    updateLeaderboardUI(); // Kayıttan sonra tabloyu hemen güncelle
+}
+
+// --- EVENT LISTENERS ---
+document.getElementById('btn-start').addEventListener('click', initGame);
+document.getElementById('btn-save').addEventListener('click', saveLocalScore);
+document.getElementById('btn-menu').addEventListener('click', () => location.reload()); // Menüye dön, sayfayı yeniden yükle
+
+// Başlat
+updateLeaderboardUI();
 
 </script>
+</body>
+</html>
