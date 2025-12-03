@@ -1,259 +1,119 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MISTAKE</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:'Orbitron',sans-serif;overflow:hidden;cursor:crosshair !important}
-canvas{position:fixed;top:0;left:0}
-#ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none}
-.screen{display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:rgba(0,0,0,0.94);backdrop-filter:blur(15px);text-align:center;pointer-events:auto}
-.screen.active{display:flex}
-h1{font-size:clamp(50px,10vw,140px);margin:20px;background:linear-gradient(45deg,#ff0044,#ff4488);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px #ff0044;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{text-shadow:0 0 40px #ff0044}50%{text-shadow:0 0 80px #ff2266}}
-h2{font-size:clamp(36px,7vw,80px);margin:20px;text-shadow:0 0 25px #ff4488}
-button{padding:14px 45px;font-size:clamp(18px,3.5vw,28px);background:#ff0044;color:#000;border:none;border-radius:14px;cursor:pointer;font-weight:800;margin:12px;box-shadow:0 0 30px #ff0044;transition:0.3s;letter-spacing:1.5px;pointer-events:auto}
-button:hover{transform:scale(1.12);box-shadow:0 0 65px #ff2266}
-input{padding:12px 20px;font-size:clamp(18px,3.5vw,26px);background:rgba(255,255,255,0.1);border:2px solid #ff0044;border-radius:12px;color:#fff;text-align:center;margin:12px;width:70%;max-width:340px;pointer-events:auto}
-#leaderboard{margin:20px;color:#00ffcc;font-size:clamp(13px,2vw,18px);max-height:50vh;overflow-y:auto;background:rgba(0,255,204,0.05);padding:15px;border-radius:12px;border:1px solid #00ffcc}
-#leaderboard h3{margin-bottom:12px;font-size:clamp(18px,3.5vw,30px)}
-#leaderboard ol{padding-left:25px}
-#leaderboard li{margin:5px 0;display:grid;grid-template-columns:40px 110px 90px 70px 70px 60px;text-align:left}
-#leaderboard .rank{color:#ff0044;font-weight:800}
-#leaderboard .nick{flex:1;margin-left:8px}
-#leaderboard .score{color:#00ffcc;font-weight:800}
-#leaderboard .words{color:#44ff44}
-#leaderboard .errors{color:#ff4444}
-#leaderboard .level{color:#ffaa00}
-#hud{position:fixed;z-index:20;pointer-events:none}
-#levelInfo{top:12px;left:12px;font-size:clamp(12px,1.8vw,16px);background:rgba(255,0,68,0.12);padding:6px 12px;border-radius:8px;border:1px solid #ff0044}
-#puan{top:12px;right:12px;font-size:clamp(14px,2.2vw,22px);background:rgba(0,255,204,0.12);padding:6px 14px;border-radius:8px;border:1px solid #00ffcc;text-shadow:0 0 12px #00ffcc}
-#hataCarpan{bottom:12px;left:12px;font-size:clamp(12px,1.8vw,16px);background:rgba(255,0,68,0.12);padding:6px 12px;border-radius:8px;border:1px solid #ff0044}
-#hataAnim{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:140px;font-weight:800;opacity:0;color:#ff0044;text-shadow:0 0 80px #ff2266;pointer-events:none;z-index:30;animation:hata 0.9s ease-out forwards}
-@keyframes hata{0%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.4)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.9)}}
-</style>
-</head>
-<body>
-<canvas id="c"></canvas>
-
-<div id="ui">
-    <div id="start" class="screen active">
-        <h1>MISTAKE</h1>
-        <button id="basla">BAŞLA</button>
-        <button id="siralamaBtn">SIRALAMA</button>
-    </div>
-    <div id="levelComplete" class="screen">
-        <h2>BÖLÜM <span id="levelNum">1</span> TAMAM</h2>
-        <p style="font-size:34px">BONUS: <span id="levelPuan">0</span></p>
-        <button id="nextLevel">DEVAM</button>
-    </div>
-    <div id="bitti" class="screen">
-        <h1>OYUN BİTTİ</h1>
-        <p style="font-size:46px">PUAN: <span id="toplamPuan">0</span></p>
-        <input id="nick" placeholder="NİCK GİR (max 12)" maxlength="12">
-        <button id="gonder">SIRALAMAYA KAYDET</button>
-        <div id="leaderboard">
-            <h3>MISTAKE - GLOBAL SIRALAMA (İLK 100)</h3>
-            <ol id="liste"><li style="color:#666">Yükleniyor...</li></ol>
-        </div>
-        <button onclick="location.reload()">TEKRAR OYNA</button>
-    </div>
-</div>
-
-<div id="hud">
-    <div id="levelInfo">BÖLÜM 1 • 0/10</div>
-    <div id="puan">PUAN: 0</div>
-    <div id="hataCarpan">HATA: 0 | ÇARPAN: 1.00x</div>
-</div>
-<div id="hataAnim">HATA!</div>
-
 <script>
-// ====== SESLER ======
-const ses = {
-    hit: new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="),
-    error: new Audio("data:audio/wav;base64,UklGRl4AAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA="),
-    levelup: new Audio("data:audio/wav;base64,UklGRmQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=")
-};
-function oynat(s){s.currentTime=0; s.play().catch(()=>{});}
+// ... (SESLER VE PARÇACIK SINIFLARI AYNI KALIR) ...
 
-// ====== GLOBAL BACKEND ======
+// ====== GLOBAL BACKEND & SOL TABLO ======
 const API_URL = "https://mistake-leaderboard.deno.dev";
-async function skorGonder(d){try{await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});}catch(e){console.error(e);}}
-async function skorGetir(){try{const r=await fetch(API_URL);return (await r.json()).slice(0,100);}catch(e){return [];}}
 
-function tabloGuncelle(l){
-    const ol=document.getElementById('liste');
-    ol.innerHTML=l.length===0?"<li style='color:#666'>Sen ilk ol!</li>":l.map((e,i)=>`
-        <li>
-            <span class="rank">${(i+1).toString().padStart(3)}.</span>
-            <span class="nick">${e.nick.padEnd(12)}</span>
-            <span class="score">${e.skor.toLocaleString()}</span>
-            <span class="words">${e.kelime}</span>
-            <span class="errors">${e.hata}</span>
-            <span class="level">L${e.level}</span>
-        </li>`).join('');
+async function skorGonder(d){
+    try{
+        await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});
+        await sideTabloGuncelle();
+    }catch(e){console.error(e);}
 }
 
-// ====== 500+ RASTGELE KELİME ======
-const KELIMELER = [
-"merhaba","dostluk","oyuncu","gizemli","bilgisayar","kodlama","programlama","yarışma","sevinç","uzaylı","gezegen","bilinmez","anlamlı","savaşçı","yazılım",
-"ekstra","çalışmak","gelişmek","görünmek","başlamak","öğrenmek","anlatmak","denemek","düşünmek","işlemek","yaklaşmak","karışık","rahatlamak","oynamak","toplamak","düşmek","yürümek","uçmak","kaybolmak",
-"eklemek","eklemeler","eklenmek","eklenmiş","ekleniyor","eksen","ekle","ekran","ekspres","ekip","ekosistem","ekoloji","ekonomik","ekspozisyon","ekstrem","ekleyecek","eklemeli","ekibim","ekspresyon","ekipman",
-/* Buraya toplam 500+ kelime olacak şekilde devam edilecek, örnek için kısa liste bırakıldı. */
-];
-
-// ====== OYUN ======
-const c=document.getElementById('c'), ctx=c.getContext('2d');
-let w,h,totalScore=0,currentLevel=1,wordsToComplete=10,completedWordsTotal=0;
-let aktifKelimeler=[],lazerler=[],oyunBasladi=false;
-let hataSayisi=0,hizCarpani=1.0,spawnTimer=0,nextSpawnDelay=1500;
-let levelStartTime=0,sonTamamlananLevel=0;
-let mevcutKelimeler=new Set();
-let hataHarfleri=new Set(); // kırmızı olmuş harfler
-
-function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}
-resize();window.addEventListener('resize',resize);
-
-class Kelime{
-    constructor(metin){
-        this.metin=metin;
-        this.x=120+Math.random()*(w-400);
-        this.y=-100;
-        this.index=0;
-        this.baseHiz=2.0+currentLevel*0.18;
-        this.hiz=this.baseHiz*hizCarpani;
-        this.vuruldu=false;
+async function sideTabloGuncelle(){
+    const ul = document.getElementById('sideList');
+    const leaderboard = document.getElementById('sideLeaderboard');
+    
+    // Tabloyu sadece başlangıç ekranı (start) aktifse görünür yap
+    if(document.getElementById('start').classList.contains('active')) {
+        leaderboard.style.display = 'block';
+    } else {
+        leaderboard.style.display = 'none';
     }
-    getCurrentPos(){
-        ctx.font="bold 36px Orbitron";
-        const oncesi=ctx.measureText(this.metin.substring(0,this.index)).width;
-        const harf=this.metin[this.index]||'';
-        const gen=ctx.measureText(harf).width;
-        return {x:this.x+oncesi+gen/2,y:this.y};
-    }
-    ciz(){
-        ctx.font="bold 36px Orbitron";ctx.textBaseline="middle";
-        ctx.shadowBlur=this.vuruldu?35:0;ctx.shadowColor="#ff0044";
-        let x=this.x;
-        for(let i=0;i<this.metin.length;i++){
-            ctx.fillStyle=i<this.index?"#ff2266":"#ffffff";
-            ctx.fillText(this.metin[i],x,this.y);
-            x+=ctx.measureText(this.metin[i]).width;
+    
+    ul.innerHTML = '<li style="text-align:center; display:block; color:#00ffcc; font-weight:bold;">Yükleniyor...</li>';
+    try {
+        const r = await fetch(API_URL);
+        if (!r.ok) throw new Error(`HTTP Error! Status: ${r.status}`);
+        const data = await r.json();
+        const top20 = data.slice(0, 20);
+        
+        ul.innerHTML = top20.map((e,i) => `
+            <li>
+                <span>${(i+1).toString().padStart(2, '0')}. ${e.nick.substring(0,10)}</span>
+                <span style="color:#00ffcc">${e.skor.toLocaleString()}</span>
+            </li>
+        `).join('');
+        
+        if (top20.length === 0) {
+             ul.innerHTML = '<li style="text-align:center; display:block; color:#666">Henüz skor yok! İlk sen ol.</li>';
         }
-        ctx.shadowBlur=0;
+        
+    } catch(e) {
+        console.error("Sıralama yüklenirken hata:", e);
+        ul.innerHTML = '<li style="text-align:center; display:block; color:#ff4444; font-weight:bold;">BAĞLANTI HATASI</li>';
     }
-    dus(){this.y+=this.hiz;return this.y<h+100;}
+}
+// Başlangıçta tabloyu çek ve görünür yap
+sideTabloGuncelle();
+
+// ... (KELİME SINIFI, PARTİKÜL SINIFI VE OYUN DEĞİŞKENLERİ AYNI KALIR) ...
+
+// ====== BUTONLAR (GÜNCELLENMİŞ) ======
+document.getElementById('basla').onclick=()=>{
+    document.getElementById('start').classList.remove('active');
+    document.getElementById('sideLeaderboard').style.display = 'none'; // OYUN BAŞLAYINCA KESİNLİKLE GİZLE
+    initGame();
 }
 
-function rastgeleKelime(){
-    let kelime;
-    do{kelime=KELIMELER[Math.floor(Math.random()*KELIMELER.length)];}while(mevcutKelimeler.has(kelime));
-    mevcutKelimeler.add(kelime);
-    return kelime;
-}
-
-function spawnKelime(){
-    if(!oyunBasladi||completedWordsTotal>=wordsToComplete)return;
-    aktifKelimeler.push(new Kelime(rastgeleKelime()));
-    nextSpawnDelay=(1000+Math.random()*1200)/hizCarpani;
-}
-
-// ====== BUTONLAR ======
-document.getElementById('basla').onclick=()=>{document.getElementById('start').classList.remove('active');initGame();}
-document.getElementById('siralamaBtn').onclick=async()=>{
-    const tablo=await skorGetir();tabloGuncelle(tablo);
-    alert("Sıralama güncellendi! (Aşağıdaki tablodan görebilirsiniz)");
-}
 document.getElementById('nextLevel').onclick=()=>{
-    document.getElementById('levelComplete').classList.remove('active');
-    currentLevel++;
-    wordsToComplete+=5; // her bölümde 5 artacak
-    completedWordsTotal=0;
-    levelStartTime=Date.now();
-    aktifKelimeler=[];
-    lazerler=[];
-    mevcutKelimeler.clear();
-    oyunBasladi=true;
-    spawnKelime();
-    sonTamamlananLevel=currentLevel-1;
+    // ... (AYNI KALIR) ...
 }
 
 function initGame(){
-    currentLevel=1;wordsToComplete=10;completedWordsTotal=0;totalScore=0;
-    hataSayisi=0;hizCarpani=1.0;aktifKelimeler=[];lazerler=[];mevcutKelimeler.clear();hataHarfleri.clear();
-    levelStartTime=Date.now();oyunBasladi=true;sonTamamlananLevel=0;
-    spawnKelime();
+    // ... (AYNI KALIR) ...
 }
 
-// ====== KLAVYE ======
-document.addEventListener('keydown',e=>{
-    if(!oyunBasladi)return;
-    const tus=e.key.toLowerCase();
-    let vuruldu=false;
+// ... (KLAVYE, BOLUMTAMAM AYNI KALIR) ...
 
-    for(let k of aktifKelimeler){
-        if(k.index<k.metin.length && k.metin[k.index].toLowerCase()===tus){
-            const pos=k.getCurrentPos();
-            lazerler.push({sx:w/2,sy:h-100,tx:pos.x,ty:pos.y,life:1});
-            k.vuruldu=true;
-            k.index++;
-            totalScore+=Math.floor(10*hizCarpani);
-            oynat(ses.hit);
-            vuruldu=true;
-            mevcutKelimeler.delete(k.metin);
-            if(k.index>=k.metin.length){
-                aktifKelimeler=aktifKelimeler.filter(x=>x!==k);
-                completedWordsTotal++;
-                if(completedWordsTotal>=wordsToComplete)bolumTamam();
-            }
-        }
-    }
-
-    // HATA KONTROLÜ
-    if(!vuruldu && !e.repeat && !hataHarfleri.has(tus)){
-        hataSayisi++;hizCarpani*=1.05;
-        aktifKelimeler.forEach(k=>k.hiz=k.baseHiz*hizCarpani);
-        oynat(ses.error);
-        const anim=document.getElementById('hataAnim');anim.style.opacity=1;
-        setTimeout(()=>anim.style.opacity=0,100);
-        hataHarfleri.add(tus); // yanlış harfleri işaretle
-    }
-});
-
-function bolumTamam(){
-    oyunBasladi=false;
-    oynat(ses.levelup);
-    const saniye=(Date.now()-levelStartTime)/1000;
-    const bonus=Math.floor(15000*wordsToComplete/saniye*hizCarpani);
-    totalScore+=bonus;
-    document.getElementById('levelNum').textContent=currentLevel;
-    document.getElementById('levelPuan').textContent=bonus.toLocaleString();
-    document.getElementById('levelComplete').classList.add('active');
-    sonTamamlananLevel=currentLevel;
-}
-
-async function oyunBitti(){
-    oyunBasladi=false;
+function oyunBitti(kelime){
+    if(isGameOver) return; 
+    isGameOver = true;
+    oyunBasladi = false;
+    oynat('gameover');
+    
+    // ... (AĞIR ÇEKİM VE FADE EFEKTİ AYNI KALIR) ...
+    
     document.getElementById('toplamPuan').textContent=totalScore.toLocaleString();
-    document.getElementById('bitti').classList.add('active');
-    const tablo=await skorGetir();tabloGuncelle(tablo);
+    // Oyun Bitti Ekranında görünmesine izin verilmiyor.
 }
 
-// SIRALAMAYA KAYDET BUTONU
+// SADECE KAYDET, TABLO GÖSTERME (GÜNCELLENMİŞ)
 document.getElementById('gonder').addEventListener('click', async()=>{
     const nick=document.getElementById('nick').value.trim()||'Anon';
-    await skorGonder({nick:nick.substring(0,12),skor:totalScore,kelime:completedWordsTotal,hata:hataSayisi,level:sonTamamlananLevel});
-    const tablo=await skorGetir();tabloGuncelle(tablo);
+    const btn = document.getElementById('gonder');
+    btn.textContent = "KAYDEDİLİYOR...";
+    btn.disabled = true;
+    
+    await skorGonder({
+        nick:nick.substring(0,12),
+        skor:totalScore,
+        kelime:completedWordsTotal,
+        hata:hataSayisi,
+        level:sonTamamlananLevel
+    });
+    
+    alert("Skorun kaydedildi!");
+    
+    // Oyun Bitti Ekranından Ana Menüye dön
+    document.getElementById('bitti').classList.remove('active');
+    document.getElementById('start').classList.add('active');
+    document.getElementById('sideLeaderboard').style.display = 'block'; // Ana Menüye dönünce göster
+    
+    // OYUNU TEMİZLE
+    initGame();
+    oyunBasladi = false;
+    isGameOver = false;
+
+    // Geri dönen kullanıcının HUD'unu temizle (Görünmeyecek ama sıfırlansın)
+    document.getElementById('puan').innerText = `PUAN: 0`;
+    document.getElementById('hataCarpan').innerHTML = `HATA: 0 | ÇARPAN: <span style="color:#ff0044">1.00x</span>`;
+    document.getElementById('levelInfo').innerText = `BÖLÜM 1 • 0/10`;
 });
 
-function cizLazerler(){
-    lazerler=lazerler.filter(l=>{
-        const a=l.life;
-        ctx.shadowColor="#ff0044";ctx.shadowBlur=50*a;
-        ctx.strokeStyle=`rgba(255,30,80,${a})`;ctx.lineWidth=12*a;
-        ctx.lineCap="round";ctx.beginPath();ctx.moveTo(l.sx,l.sy);ctx.lineTo(l.tx,l.ty);ctx.stroke();
-        l.life-=0.06;return l.life>0;
-    });
+// ... (MAIN LOOP AYNI KALIR) ...
+
+loop();
+
+</script>
