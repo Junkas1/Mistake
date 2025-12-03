@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MISTAKE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:#000;color:#fff;font-family:'Orbitron',sans-serif;overflow:hidden;cursor:crosshair !important}
+        canvas{position:fixed;top:0;left:0}
+        #ui{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;pointer-events:none}
+        .screen{display:none;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:rgba(0,0,0,0.94);backdrop-filter:blur(15px);text-align:center;pointer-events:auto}
+        .screen.active{display:flex}
+        h1{font-size:clamp(50px,10vw,140px);margin:20px;background:linear-gradient(45deg,#ff0044,#ff4488);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px #ff0044;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{text-shadow:0 0 40px #ff0044}50%{text-shadow:0 0 80px #ff2266}}
+        h2{font-size:clamp(36px,7vw,80px);margin:20px;text-shadow:0 0 25px #ff4488}
+        button{padding:14px 45px;font-size:clamp(18px,3.5vw,28px);background:#ff0044;color:#000;border:none;border-radius:14px;cursor:pointer;font-weight:800;margin:12px;box-shadow:0 0 30px #ff0044;transition:0.3s;letter-spacing:1.5px;pointer-events:auto}
+        button:hover{transform:scale(1.12);box-shadow:0 0 65px #ff2266}
+        input{padding:12px 20px;font-size:clamp(18px,3.5vw,26px);background:rgba(255,255,255,0.1);border:2px solid #ff0044;border-radius:12px;color:#fff;text-align:center;margin:12px;width:70%;max-width:340px;pointer-events:auto}
+        #leaderboard{margin:20px;color:#00ffcc;font-size:clamp(13px,2vw,18px);max-height:50vh;overflow-y:auto;background:rgba(0,255,204,0.05);padding:15px;border-radius:12px;border:1px solid #00ffcc}
+        #leaderboard h3{margin-bottom:12px;font-size:clamp(18px,3.5vw,30px)}
+        #leaderboard ol{padding-left:25px}
+        #leaderboard li{margin:5px 0;display:grid;grid-template-columns:40px 110px 90px 70px 70px 60px;text-align:left}
+        #leaderboard .rank{color:#ff0044;font-weight:800}
+        #leaderboard .nick{flex:1;margin-left:8px}
+        #leaderboard .score{color:#00ffcc;font-weight:800}
+        #leaderboard .words{color:#44ff44}
+        #leaderboard .errors{color:#ff4444}
+        #leaderboard .level{color:#ffaa00}
+        #hud{position:fixed;z-index:20;pointer-events:none}
+        #levelInfo{top:12px;left:12px;font-size:clamp(12px,1.8vw,16px);background:rgba(255,0,68,0.12);padding:6px 12px;border-radius:8px;border:1px solid #ff0044}
+        #puan{top:12px;right:12px;font-size:clamp(14px,2.2vw,22px);background:rgba(0,255,204,0.12);padding:6px 14px;border-radius:8px;border:1px solid #00ffcc;text-shadow:0 0 12px #00ffcc}
+        #hataCarpan{bottom:12px;left:12px;font-size:clamp(12px,1.8vw,16px);background:rgba(255,0,68,0.12);padding:6px 12px;border-radius:8px;border:1px solid #ff0044}
+        #hataAnim{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:140px;font-weight:800;opacity:0;color:#ff0044;text-shadow:0 0 80px #ff2266;pointer-events:none;z-index:30;animation:hata 0.9s ease-out forwards}
+        @keyframes hata{0%{opacity:0;transform:translate(-50%,-50%) scale(0.3)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.4)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.9)}}
+    </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="ui">
+    <div id="start" class="screen active"><h1>MISTAKE</h1><button id="basla">BAŞLA</button></div>
+    <div id="levelComplete" class="screen"><h2>BÖLÜM <span id="levelNum">1</span> TAMAM</h2><p style="font-size:34px">BONUS: <span id="levelPuan">0</span></p><button id="nextLevel">DEVAM</button></div>
+    <div id="bitti" class="screen">
+        <h1>OYUN BİTTİ</h1>
+        <p style="font-size:46px">PUAN: <span id="toplamPuan">0</span></p>
+        <input id="nick" placeholder="NİCK GİR (max 12)" maxlength="12">
+        <button id="gonder">SIRALAMAYA KAYDET</button>
+        <div id="leaderboard"><h3>MISTAKE - GLOBAL SIRALAMA (İLK 100)</h3><ol id="liste"><li style="color:#666">Yükleniyor...</li></ol></div>
+        <button onclick="location.reload()">TEKRAR OYNA</button>
+    </div>
+</div>
+
+<div id="hud">
+    <div id="levelInfo">BÖLÜM 1 • 0/10</div>
+    <div id="puan">PUAN: 0</div>
+    <div id="hataCarpan">HATA: 0 | ÇARPAN: 1.00x</div>
+</div>
+<div id="hataAnim">HATA!</div>
+
+<script>
+// ====== SESLER ======
+const ses = {
+    hit: new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="),
+    error: new Audio("data:audio/wav;base64,UklGRl4AAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA="),
+    levelup: new Audio("data:audio/wav;base64,UklGRmQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=")
+};
+function oynat(s){s.currentTime=0; s.play().catch(()=>{});}
+
+// ====== GLOBAL BACKEND ======
+const API_URL = "https://mistake-leaderboard.deno.dev";
+async function skorGonder(d){try{await fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(d)});}catch(e){console.error(e);}}
+async function skorGetir(){try{const r=await fetch(API_URL);return (await r.json()).slice(0,100);}catch(e){return [];}}
+function tabloGuncelle(l){
+    const ol=document.getElementById('liste');
+    ol.innerHTML=l.length===0?"<li style='color:#666'>Sen ilk ol!</li>":l.map((e,i)=>`
+        <li>
+            <span class="rank">${(i+1).toString().padStart(3)}.</span>
+            <span class="nick">${e.nick.padEnd(12)}</span>
+            <span class="score">${e.skor.toLocaleString()}</span>
+            <span class="words">${e.kelime}</span>
+            <span class="errors">${e.hata}</span>
+            <span class="level">L${e.level}</span>
+        </li>`).join('');
+}
+skorGetir().then(tabloGuncelle);
+
+// ====== 400+ TEMİZ TÜRKÇE KELİME ======
+const KELIMELER = ["almak","açmak","anlamak","atmak","bakmak","başlamak","beklemek","bilmek","bulmak","çalışmak","çıkmak","demek","değişmek","düşünmek","gelmek","gitmek","görmek","istemek","kalmak","konuşmak","okumak","olmak","oturmak","söylemek","vermek","yapmak","yazmak","yemek","içmek","izlemek","koşmak","öğrenmek","öğretmek","satmak","sevmek","tanımak","unutmak","uyumak","uyanmak","yaşamak","yürümek","ağlamak","bağırmak","gülmek","kaçmak","kovalamak","koymak","kırılmak","kızmak","sevinmek","üzülmek","düşmek","kalkmak","durmak","dinlenmek","boşalmak","doldurmak","toplamak","dağıtmak","birleştirmek","ayırmak","katılmak","girmek","çıkarmak","giymek","takmak","kullanmak","kurmak","kurtarmak","kazanmak","kaybetmek","başarmak","davranmak","davet etmek","dönmek","fark etmek","geçmek","hatırlamak","inanmak","istemek","kabul etmek","karşılamak","kazanmak","kaybetmek","korkmak","korumak","kullanmak","kurmak","kurtarmak","kurtulmak","okumak","oturmak","oynamak","ödemek","öğrenmek","öldürmek","ölmek","paylaşmak","sağlamak","sahip olmak","sanmak","satın almak","satmak","saymak","seçmek","sevmek","seyretmek","sormak","söylemek","sunmak","sürmek","tanımak","taşımak","tercih etmek","toplamak","tutmak","uğraşmak","ulaşmak","unutmak","uygulamak","uymak","uyumak","uzanmak","üretmek","varmak","vermek","vurmak","yakalamak","yaklaşmak","yakmak","yanmak","yapmak","yararlanmak","yaratmak","yardımcı olmak","yaşamak","yatmak","yayılmak","yazmak","yemek","yetmek","yükselmek","yürümek","beklenmek","bilinmek","bulunmak","çalışılmak","değiştirilmek","görülmek","istenmek","kapatmak","kazanmak","kaybetmek","kullanılmak","kurulmak","okunmak","oturtulmak","söylenmek","verilmek","yapılmak","yazılmak","başvurmak","buluşmak","çalıştırmak","doldurmak","düşürmek","geliştirmek","göstermek","hazırlamak","kapatmak","kırmak","kurtarmak","oturmak","oynamak","saldırmak","savunmak","seçmek","sormak","söylemek","sunmak","sürmek","taşımak","toplamak","tutmak","ulaşmak","unutmak","uygulamak","uymak","uzanmak","üretmek","varmak","vermek","vurmak","yakalamak","yaklaşmak","yakmak","yanmak","yapmak","yararlanmak","yaratmak","yardımcı olmak","yaşamak","yatmak","yayılmak","yazmak","yemek","yetmek","yükselmek","yürümek","akmak","anlaşmak","aşmak","atılmak","ayırmak","bağlamak","başlamak","beklenmek","bilinmek","bulunmak","çalışılmak","çıkarılmak","değiştirilmek","düşürülmek","görülmek","istenmek","kapatmak","kazanmak","kaybetmek","kullanılmak","kurulmak","okunmak","oturtulmak","söylenmek","verilmek","yapılmak","yazılmak","açılmak","anlaşılmak","başlanmak","beklenmek","bilinmek","bulunmak","çalışılmak","çıkarılmak","değiştirilmek","düşürülmek","görülmek","istenmek","kapatılmak","kazanılmak","kaybedilmek","kullanılmak","kurulmak","okunmak","oturtulmak","söylenmek","verilmek","yapılmak","yazılmak","koşucu","saldırmak","savunmak","seçmek","sormak","söylemek","sunmak","sürmek","taşımak","toplamak","tutmak","ulaşmak","unutmak","uygulamak","uymak","uzanmak","üretmek","varmak","vermek","vurmak","yakalamak","yaklaşmak","yakmak","yanmak","yapmak","yararlanmak","yaratmak","yardımcı olmak","yaşamak","yatmak","yayılmak","yazmak","yemek","yetmek","yükselmek","yürümek"];
+
+// ====== OYUN ======
+const c=document.getElementById('c'), ctx=c.getContext('2d');
+let w,h,totalScore=0,currentLevel=1,wordsToComplete=10,completedWordsTotal=0;
+let aktifKelimeler=[],lazerler=[],oyunBasladi=false;
+let hataSayisi=0,hizCarpani=1.0,spawnTimer=0,nextSpawnDelay=1500;
+let levelStartTime=0,sonTamamlananLevel=0;
+let mevcutKelimeler=new Set();
+
+function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+
+class Kelime{
+    constructor(metin){this.metin=metin;this.x=120+Math.random()*(w-400);this.y=-100;this.index=0;this.baseHiz=2.0+currentLevel*0.18;this.hiz=this.baseHiz*hizCarpani;this.vuruldu=false;}
+    getCurrentPos(){
+        ctx.font="bold 36px Orbitron";
+        const oncesi=ctx.measureText(this.metin.substring(0,this.index)).width;
+        const harf=this.metin[this.index]||'';
+        const gen=ctx.measureText(harf).width;
+        return {x:this.x+oncesi+gen/2,y:this.y};
+    }
+    ciz(){
+        ctx.font="bold 36px Orbitron";ctx.textBaseline="middle";
+        ctx.shadowBlur=this.vuruldu?35:0;ctx.shadowColor="#ff0044";
+        let x=this.x;
+        for(let i=0;i<this.metin.length;i++){
+            ctx.fillStyle=i<this.index?"#ff2266":"#ffffff";
+            ctx.fillText(this.metin[i],x,this.y);
+            x+=ctx.measureText(this.metin[i]).width;
+        }
+        ctx.shadowBlur=0;
+    }
+    dus(){this.y+=this.hiz;return this.y<h+100;}
+}
+
+function rastgeleKelime(){
+    let kelime;
+    do{kelime=KELIMELER[Math.floor(Math.random()*KELIMELER.length)];}while(mevcutKelimeler.has(kelime));
+    mevcutKelimeler.add(kelime);
+    return kelime;
+}
+
+function spawnKelime(){
+    if(!oyunBasladi||completedWordsTotal>=wordsToComplete)return;
+    aktifKelimeler.push(new Kelime(rastgeleKelime()));
+    nextSpawnDelay=(1000+Math.random()*1200)/hizCarpani;
+}
+
+document.getElementById('basla').onclick=()=>{document.getElementById('start').classList.remove('active');initGame();}
+document.getElementById('nextLevel').onclick=()=>{document.getElementById('levelComplete').classList.remove('active');currentLevel++;wordsToComplete+=5;levelStartTime=Date.now();aktifKelimeler=[];lazerler=[];mevcutKelimeler.clear();oyunBasladi=true;spawnKelime();sonTamamlananLevel=currentLevel-1;}
+
+function initGame(){
+    currentLevel=1;wordsToComplete=10;completedWordsTotal=0;totalScore=0;
+    hataSayisi=0;hizCarpani=1.0;aktifKelimeler=[];lazerler=[];mevcutKelimeler.clear();
+    levelStartTime=Date.now();oyunBasladi=true;sonTamamlananLevel=0;spawnKelime();
+}
+
+document.addEventListener('keydown',e=>{
+    if(!oyunBasladi)return;
+    const tus=e.key.toLowerCase();
+    let vuruldu=false;
+
+    // TÜM KELİMELERİ TARA – AYNI HARF BİRDEN FAZLA YERDE VURULABİLİR
+    for(let k of aktifKelimeler){
+        if(k.index<k.metin.length && k.metin[k.index].toLowerCase()===tus){
+            const pos=k.getCurrentPos();
+            lazerler.push({sx:w/2,sy:h-100,tx:pos.x,ty:pos.y,life:1});
+            k.vuruldu=true;k.index++;totalScore+=Math.floor(10*hizCarpani);
+            oynat(ses.hit);vuruldu=true;
+            mevcutKelimeler.delete(k.metin);
+            if(k.index>=k.metin.length){
+                aktifKelimeler=aktifKelimeler.filter(x=>x!==k);
+                completedWordsTotal++;
+                if(completedWordsTotal>=wordsToComplete)bolumTamam();
+            }
+        }
+    }
+
+    // SADECE GERÇEKTEN HİÇBİR YERDE UYGUN HARF YOKSA HATA SAY
+    if(!vuruldu && !e.repeat){
+        hataSayisi++;hizCarpani*=1.05;
+        aktifKelimeler.forEach(k=>k.hiz=k.baseHiz*hizCarpani);
+        oynat(ses.error);
+        const anim=document.getElementById('hataAnim');anim.style.opacity=1;
+        setTimeout(()=>anim.style.opacity=0,100);
+    }
+});
+
+function bolumTamam(){
+    oyunBasladi=false;oynat(ses.levelup);
+    const saniye=(Date.now()-levelStartTime)/1000;
+    const bonus=Math.floor(15000*wordsToComplete/saniye*hizCarpani);
+    totalScore+=bonus;
+    document.getElementById('levelNum').textContent=currentLevel;
+    document.getElementById('levelPuan').textContent=bonus.toLocaleString();
+    document.getElementById('levelComplete').classList.add('active');
+    sonTamamlananLevel=currentLevel;
+}
+
+async function oyunBitti(){
+    oyunBasladi=false;
+    document.getElementById('toplamPuan').textContent=totalScore.toLocaleString();
+    document.getElementById('bitti').classList.add('active');
+    const tablo=await skorGetir();tabloGuncelle(tablo);
+}
+
+// SIRALAMAYA KAYDET BUTONU TAM ÇALIŞIYOR
+document.getElementById('gonder').addEventListener('click', async()=>{
+    const nick=document.getElementById('nick').value.trim()||'Anon';
+    await skorGonder({nick:nick.substring(0,12),skor:totalScore,kelime:completedWordsTotal,hata:hataSayisi,level:sonTamamlananLevel});
+    const tablo=await skorGetir();tabloGuncelle(tablo);
+});
+
+function cizLazerler(){
+    lazerler=lazerler.filter(l=>{
+        const a=l.life;
+        ctx.shadowColor="#ff0044";ctx.shadowBlur=50*a;
+        ctx.strokeStyle=`rgba(255,30,80,${a})`;ctx.lineWidth=12*a;
+        ctx.lineCap="round";ctx.beginPath();ctx.moveTo(l.sx,l.sy);ctx.lineTo(l.tx,l.ty);ctx.stroke();
+        l.life-=0.06;return l.life>0;
+    });
+    ctx.shadowBlur=0;
+}
+
+function loop(){
+    ctx.fillStyle="#000011";ctx.fillRect(0,0,w,h);
+    document.getElementById('levelInfo').innerHTML=`BÖLÜM ${currentLevel} • ${completedWordsTotal}/${wordsToComplete}`;
+    document.getElementById('puan').innerHTML=`PUAN: ${totalScore.toLocaleString()}`;
+    document.getElementById('hataCarpan').innerHTML=`HATA: ${hataSayisi} | ÇARPAN: ${hizCarpani.toFixed(2)}x`;
+
+    ctx.fillStyle="#ff0044";ctx.shadowColor="#ff2266";ctx.shadowBlur=60;
+    ctx.beginPath();ctx.arc(w/2,h-100,22,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+
+    if(oyunBasladi){
+        spawnTimer+=16;
+        if(spawnTimer>=nextSpawnDelay){spawnKelime();spawnTimer=0;}
+    }
+
+    for(let i=aktifKelimeler.length-1;i>=0;i--){
+        const k=aktifKelimeler[i];k.ciz();
+        if(!k.dus()){aktifKelimeler.splice(i,1);oyunBitti();}
+    }
+
+    cizLazerler();
+    requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>
