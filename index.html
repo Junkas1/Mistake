@@ -346,7 +346,7 @@
 <body>
 
 <canvas id="gameCanvas"></canvas>
-<div id="error-flash"></div>
+<div id="error-flash" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 0, 0, 0.3); opacity: 0; transition: opacity 0.05s; z-index: 200; pointer-events: none;"></div>
 
 <div id="ui-layer">
     
@@ -650,7 +650,7 @@ class Word {
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
         if (!state.isPausedForLevel || state.settings.skipWait) {
-            // >>> KULLANICI İSTEĞİ 3: Kelime hızını yavaşlat (0.8 -> 0.4 ve 0.05 -> 0.03) <<<
+            // Kelime hızını yavaşlat (0.4 + 0.03 * level)
             const baseSpeed = 0.4 + (state.level * 0.03); 
             this.y += baseSpeed * dt * state.timeScale * errorMultiplier; 
         }
@@ -872,7 +872,7 @@ function initGame() {
     document.getElementById('btn-save').disabled = false;
     document.getElementById('btn-save').innerText = "KAYDET";
     
-    // >>> KULLANICI İSTEĞİ 4 & 5: İlk kelimeyi hemen oluştur <<<
+    // İlk kelimeyi hemen oluştur
     spawnWord(); 
 
     updateHUD();
@@ -1040,9 +1040,11 @@ function loop(timestamp) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
         
-        // >>> KULLANICI İSTEĞİ 2: Kelime doğuş hızını arttır (200->100, Min 60->30) <<<
-        const spawnRate = (100 - (state.level * 2)) / (errorMultiplier * state.timeScale);
-        if (state.spawnTimer > Math.max(30, spawnRate)) {
+        // >>> KULLANICI İSTEĞİ 2: Kelime doğuş hızını 3 kat arttır (100-> ~33, Min 30->10) <<<
+        const baseSpawnTime = 33 - (state.level * 0.67); 
+        const spawnRate = baseSpawnTime / (errorMultiplier * state.timeScale);
+        
+        if (state.spawnTimer > Math.max(10, spawnRate)) {
             spawnWord();
             state.spawnTimer = 0;
         }
@@ -1141,7 +1143,23 @@ document.addEventListener('keydown', (e) => {
         } 
         
     } else {
-        // --- HATA VURUŞU ---
+        // --- HATA KONTROLÜ (Kullanıcı İsteği) ---
+        // Zaten yazılmış bir harfi tekrar basmayı hata sayma.
+        const alreadyTypedWords = state.activeWords.filter(w => {
+            if (w.pendingIndex > 0) {
+                // Son yazılan harfin indeksi (lazer sırasındaki harf)
+                const lastTypedIndex = w.pendingIndex - 1;
+                return w.text[lastTypedIndex] === key;
+            }
+            return false;
+        });
+
+        if (alreadyTypedWords.length > 0) {
+            // Zaten yazılmış bir harfe tekrar basıldı, hata sayma (Sadece yoksay).
+            return;
+        }
+
+        // --- GERÇEK HATA VURUŞU ---
         state.errors++; 
         playSound('error');
         updateHUD();
