@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MISTAKE - RELOADED</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap');
+        /* ✅ FONT DEĞİŞİKLİĞİ: Türkçe karakterler için daha uygun font */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         
         :root {
             --neon-pink: #ff0055;
             --neon-blue: #00f3ff;
             --neon-red: #ff3333;
             --bg-dark: #050505;
+            --font-main: 'Share Tech Mono', monospace; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
@@ -19,7 +21,7 @@
         body {
             background: var(--bg-dark);
             color: #fff;
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--font-main);
             overflow: hidden;
             height: 100vh;
         }
@@ -69,12 +71,13 @@
             text-shadow: 0 0 50px var(--neon-pink);
             margin-bottom: 30px;
             animation: pulse 3s infinite;
+            font-family: 'Orbitron', sans-serif; /* Başlıkta Orbitron'u koruyalım */
         }
 
         button {
             padding: 15px 40px;
             font-size: 20px;
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--font-main);
             font-weight: 900;
             background: rgba(0,0,0,0.5);
             color: #fff;
@@ -129,7 +132,7 @@
         
         .lb-grid-header {
             display: grid;
-            grid-template-columns: 40px 1fr 80px 60px 60px; /* Rütbe, İsim, Puan, Hata, Bölüm */
+            grid-template-columns: 40px 1fr 80px 60px 60px;
             padding: 10px;
             font-size: 14px;
             font-weight: bold;
@@ -172,13 +175,13 @@
         }
         .go-content.visible { transform: scale(1); opacity: 1; }
 
-        input {
+        input[type="text"] {
             background: rgba(255,255,255,0.1);
             border: 1px solid var(--neon-blue);
             color: #fff;
             padding: 15px;
             font-size: 20px;
-            font-family: 'Orbitron';
+            font-family: var(--font-main);
             text-align: center;
             margin: 20px 0;
             width: 100%;
@@ -216,47 +219,119 @@
             opacity: 0; transition: opacity 0.1s;
         }
         
-        /* --- SES BUTONU CSS --- */
-        #sound-toggle {
+        /* --- AYARLAR BUTONU VE PENCERESİ CSS --- */
+        #settings-button {
             position: fixed;
             bottom: 20px;
             left: 20px;
             z-index: 15;
             width: 50px;
             height: 50px;
-            border-radius: 50%;
-            background: rgba(0, 243, 255, 0.1);
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            font-size: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 30px;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
             transition: 0.3s;
-            pointer-events: auto; /* Tıklanabilir olmalı */
+            pointer-events: auto;
+            text-shadow: 0 0 10px var(--neon-blue);
         }
 
-        #sound-toggle:hover {
-            background: rgba(0, 243, 255, 0.3);
-            transform: scale(1.1);
+        #settings-button:hover {
+            transform: rotate(60deg) scale(1.1);
+            color: var(--neon-blue);
+        }
+        
+        #settings-panel {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            width: 300px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            transform: translateX(-150%); /* Başlangıçta sol dışarıda */
+            transition: transform 0.4s ease-out;
+            pointer-events: auto;
+            z-index: 14;
+        }
+        
+        #settings-panel.open {
+            transform: translateX(0);
         }
 
-        #sound-toggle.muted {
-            border-color: var(--neon-red);
-            color: var(--neon-red);
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.5);
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+
+        /* Ses Çubuğu Stilleri */
+        #volume-control {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 243, 255, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        
+        #volume-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: transparent;
+            margin: 0;
+            cursor: pointer;
+        }
+        #volume-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--neon-blue);
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        label { color: #fff; }
+        
+        .setting-item input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--neon-blue);
+            border-radius: 3px;
+            background: rgba(0, 243, 255, 0.1);
+            cursor: pointer;
+            position: relative;
+        }
+        .setting-item input[type="checkbox"]:checked {
+            background: var(--neon-blue);
+            box-shadow: 0 0 8px var(--neon-blue);
+        }
+        .setting-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: #000;
+            font-size: 14px;
+            line-height: 1;
         }
 
 
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
     </style>
-    <script>
-        const SOUND_ON_ICON = '🔊'; // Hoparlör
-        const SOUND_OFF_ICON = '🔇'; // Ses Kapalı
-    </script>
-</head>
+    </head>
 <body>
 
 <canvas id="gameCanvas"></canvas>
@@ -301,11 +376,26 @@
     </div>
 </div>
 
-<button id="sound-toggle" aria-label="Sesi Aç/Kapat">🔊</button>
+<button id="settings-button" aria-label="Ayarlar">⚙️</button>
+
+<div id="settings-panel">
+    <div class="setting-item">
+        <span>SES SEVİYESİ:</span>
+        <span id="volume-label">100</span>
+    </div>
+    <div id="volume-control">
+        <input type="range" id="volume-range" min="0" max="100" value="100">
+    </div>
+
+    <div class="setting-item">
+        <label for="skip-wait">BÖLÜM BEKLEMESİNİ KAPA</label>
+        <input type="checkbox" id="skip-wait">
+    </div>
+</div>
 
 <script>
 /**
- * MISTAKE - RELOADED (SOUND TOGGLE ENTEGRASYONU)
+ * MISTAKE - RELOADED (BÖLÜM GEÇİŞİ VE AYARLAR ENTEGRASYONU)
  */
 
 // ✅ DENO DEPLOY URL'NİZ BURADA
@@ -340,46 +430,72 @@ const KELIMELER = [
 
 // --- SESLER (Sentetik) ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSound(type) {
-    if (!state.soundEnabled) return; // ✅ KONTROL: Ses kapalıysa hiçbir şey yapma
+const volumeRange = document.getElementById('volume-range');
+const volumeLabel = document.getElementById('volume-label');
+let masterGain = audioCtx.createGain();
+masterGain.connect(audioCtx.destination);
 
+// Ses seviyesini güncelleme
+function updateVolume() {
+    const vol = parseInt(volumeRange.value, 10);
+    const gainValue = vol / 100;
+    masterGain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+    volumeLabel.innerText = vol;
+    localStorage.setItem('gameVolume', vol);
+}
+
+// Sesleri oynatırken masterGain kullan
+function playSound(type) {
     if(audioCtx.state === 'suspended') audioCtx.resume();
+    
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
+    
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(masterGain); // Master Gain'e bağlandı
 
     const now = audioCtx.currentTime;
+    
+    // Ses seviyeleri master gain'e bırakıldığı için buradaki çarpanlar biraz daha yüksek tutuldu
     if (type === 'hit') {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-        gain.gain.setValueAtTime(0.1, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+        gain.gain.setValueAtTime(0.5, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.start(now); osc.stop(now + 0.1);
     } else if (type === 'error') {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(150, now);
         osc.frequency.linearRampToValueAtTime(100, now + 0.2);
-        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.setValueAtTime(0.4, now);
         gain.gain.linearRampToValueAtTime(0, now + 0.2);
         osc.start(now); osc.stop(now + 0.2);
     } else if (type === 'complete') {
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(400, now);
         osc.frequency.linearRampToValueAtTime(800, now + 0.15);
-        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.linearRampToValueAtTime(0, now + 0.3);
         osc.start(now); osc.stop(now + 0.3);
     } else if (type === 'explosion') {
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(100, now);
         osc.frequency.exponentialRampToValueAtTime(10, now + 1.0);
-        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.setValueAtTime(0.8, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
         osc.start(now); osc.stop(now + 1.0);
     }
 }
+
+// Başlangıçta kaydettiğimiz ses seviyesini yükle
+const savedVolume = localStorage.getItem('gameVolume');
+if (savedVolume !== null) {
+    volumeRange.value = savedVolume;
+}
+updateVolume(); // UI ve gain'i ayarla
+
+volumeRange.addEventListener('input', updateVolume);
 
 // --- CANVAS & STATE ---
 const canvas = document.getElementById('gameCanvas');
@@ -400,7 +516,11 @@ let state = {
     timeScale: 1.0,
     lastTime: 0,
     spawnTimer: 0,
-    soundEnabled: true // ✅ YENİ: Ses durumu (Başlangıçta Açık)
+    isPausedForLevel: false, // ✅ YENİ: Bölüm geçişi için duraklama
+    levelTransition: null,   // ✅ YENİ: Bölüm geçiş efekti nesnesi
+    settings: {
+        skipWait: false, // Bölüm beklemesini kapat ayarı
+    }
 };
 
 function resize() {
@@ -410,24 +530,61 @@ function resize() {
 window.addEventListener('resize', resize);
 resize();
 
-/**
- * Hata sayısına bağlı kümülatif çarpanı hesaplar.
- */
 function getErrorMultiplier() {
     return Math.pow(1.05, state.errors);
 }
 
-// --- SINIFLAR ---
+// --- YENİ SINIFLAR ---
 
-// 🔴 Lazer Sınıfı
+// ✅ Bölüm Geçişi Animasyonu Yöneticisi
+class LevelTransition {
+    constructor(level) {
+        this.text = `BÖLÜM ${level}`;
+        this.life = 0; // 0'dan 100'e (2 saniye = ~120 tick)
+        this.duration = 120; 
+    }
+
+    update(dt) {
+        if (this.life < this.duration) {
+            this.life += dt * 3; // Hızlandırılmış artış
+            return false;
+        }
+        return true; // Bitti
+    }
+
+    draw() {
+        const progress = this.life / this.duration;
+        let alpha = 0;
+
+        if (progress < 0.25) { // Görünme (0 -> 1)
+            alpha = progress * 4;
+        } else if (progress < 0.75) { // Sabit Kalma
+            alpha = 1;
+        } else { // Kaybolma (1 -> 0)
+            alpha = 1 - ((progress - 0.75) * 4);
+        }
+
+        ctx.font = "bold 100px " + getComputedStyle(document.body).getPropertyValue('--font-main');
+        ctx.textAlign = "center";
+        ctx.fillStyle = `rgba(0, 243, 255, ${alpha})`;
+        ctx.shadowColor = `rgba(0, 243, 255, ${alpha})`;
+        ctx.shadowBlur = 40 * alpha;
+        
+        ctx.fillText(this.text, w / 2, h / 2);
+        
+        ctx.shadowBlur = 0;
+        ctx.textAlign = "left";
+    }
+}
+
+
+// --- MEVCUT SINIFLAR ---
+
 class Laser {
     constructor(startX, startY, targetX, targetY, targetWord, targetIndex) {
-        this.x = startX;
-        this.y = startY; 
-        this.targetX = targetX;
-        this.targetY = targetY;
-        this.targetWord = targetWord; 
-        this.targetIndex = targetIndex; 
+        this.x = startX; this.y = startY; 
+        this.targetX = targetX; this.targetY = targetY;
+        this.targetWord = targetWord; this.targetIndex = targetIndex; 
         this.speed = 40; 
         
         const dx = targetX - startX;
@@ -475,7 +632,7 @@ class Particle {
             this.size = Math.random() * 3 + 1;
             this.color = color;
             this.gravity = 0.2;
-        } else { // fire
+        } else { 
             const angle = Math.random() * Math.PI * 2;
             const speed = Math.random() * 10 + 2;
             this.vx = Math.cos(angle) * speed;
@@ -510,7 +667,7 @@ class Word {
     constructor(text) {
         this.text = text;
         this.index = 0;
-        ctx.font = "bold 30px Orbitron";
+        ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         this.width = ctx.measureText(text).width;
         
         this.x = Math.random() * (w - this.width - 100) + 50;
@@ -522,7 +679,10 @@ class Word {
     }
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
-        this.y += this.speed * dt * state.timeScale * errorMultiplier; 
+        // Sadece oyun duraklatılmamışsa hareket et
+        if (!state.isPausedForLevel || state.settings.skipWait) {
+            this.y += this.speed * dt * state.timeScale * errorMultiplier; 
+        }
         
         for(let i=0; i<this.hitEffect.length; i++) {
             if(this.hitEffect[i] > 0) {
@@ -535,7 +695,7 @@ class Word {
         }
     }
     draw() {
-        ctx.font = "bold 30px Orbitron";
+        ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         ctx.textBaseline = "top";
         
         let currentX = this.x;
@@ -545,7 +705,6 @@ class Word {
             const charW = ctx.measureText(char).width;
             
             if (i < this.index) {
-                // Önceden yazılmış, tamamlanmış kısım (Neon Pembe)
                 ctx.fillStyle = "#ff0055";
                 ctx.shadowColor = "#ff0055"; 
                 ctx.shadowBlur = 15;
@@ -555,7 +714,6 @@ class Word {
                 ctx.shadowColor = `rgba(255, 51, 51, ${Math.min(1, this.hitEffect[i]/10)})`; 
                 ctx.shadowBlur = 25;
             } else {
-                // Henüz yazılmamış kısım (Beyaz)
                 ctx.fillStyle = "#ffffff";
                 ctx.shadowBlur = 0;
             }
@@ -566,7 +724,7 @@ class Word {
         }
     }
     explodeAsSand() {
-        ctx.font = "bold 30px Orbitron";
+        ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         let currentX = this.x;
         for (let i = 0; i < this.text.length; i++) {
             const charW = ctx.measureText(this.text[i]).width;
@@ -603,11 +761,14 @@ function initGame() {
     state.timeScale = 1.0;
     state.lastTime = 0;
     state.spawnTimer = 0;
+    state.isPausedForLevel = false;
+    state.levelTransition = null;
     
     document.getElementById('start-screen').classList.remove('active');
     document.getElementById('game-over-screen').classList.remove('active');
     document.getElementById('go-content').classList.remove('visible');
     document.getElementById('hud').style.display = 'flex';
+    document.getElementById('settings-button').style.display = 'none'; // Oyunda ayar butonunu gizle
     
     document.getElementById('btn-save').disabled = false;
     document.getElementById('btn-save').innerText = "KAYDET";
@@ -622,6 +783,17 @@ function nextLevel() {
     state.wordsCompleted = 0;
     playSound('complete');
     updateHUD();
+
+    state.levelTransition = new LevelTransition(state.level);
+
+    if (!state.settings.skipWait) {
+        // Bekleme açıksa, oyunu 2 saniye durdur
+        state.isPausedForLevel = true;
+        setTimeout(() => {
+            state.isPausedForLevel = false;
+            // Bekleme bitince kelimeler akmaya devam eder, yeni kelimeler doğmaya başlar.
+        }, 2000); // 2 saniye bekleme
+    }
 }
 
 function triggerGameOver(x, y) {
@@ -630,6 +802,7 @@ function triggerGameOver(x, y) {
     for(let i=0; i<60; i++) state.particles.push(new Particle(x, y, null, 'fire'));
     
     document.getElementById('hud').style.display = 'none';
+    document.getElementById('settings-button').style.display = 'block'; // Menüye dönünce göster
     
     const goScreen = document.getElementById('game-over-screen');
     goScreen.style.background = "rgba(0,0,0,0.85)";
@@ -666,7 +839,7 @@ function loop(timestamp) {
 
     ctx.clearRect(0, 0, w, h);
 
-    // LAZER ÇİZİMİ (Canvas üzerinde)
+    // LAZER ÇİZİMİ
     if(state.active && !state.gameOver) {
         const laserY = h - 100;
         ctx.beginPath();
@@ -680,7 +853,8 @@ function loop(timestamp) {
         ctx.shadowBlur = 0;
     }
 
-    if (!state.gameOver) {
+    // Kelime Doğuş Kontrolü
+    if (!state.gameOver && (!state.isPausedForLevel || state.settings.skipWait)) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
         const spawnRate = (90 - (state.level * 2)) / errorMultiplier;
@@ -690,9 +864,10 @@ function loop(timestamp) {
         }
     }
 
+    // Kelime Güncelleme ve Çizim
     state.activeWords.forEach(word => { word.update(dt); word.draw(); });
     
-    // 🔴 Lazerleri güncelle ve çiz
+    // Lazerleri güncelle ve çiz
     for (let i = state.lasers.length - 1; i >= 0; i--) {
         const laser = state.lasers[i];
         const hit = laser.update(dt);
@@ -703,17 +878,33 @@ function loop(timestamp) {
         }
     }
 
+    // Parçacıklar
     for (let i = state.particles.length - 1; i >= 0; i--) {
         const p = state.particles[i]; p.update(dt); p.draw();
         if (p.life <= 0) state.particles.splice(i, 1);
     }
 
-    if (state.timeScale > 0.001 || state.particles.length > 0 || state.lasers.length > 0) requestAnimationFrame(loop);
+    // ✅ BÖLÜM GEÇİŞ EFEKTİ ÇİZİMİ
+    if (state.levelTransition) {
+        const finished = state.levelTransition.update(dt);
+        state.levelTransition.draw();
+        if (finished) {
+            state.levelTransition = null;
+        }
+    }
+
+
+    if (state.timeScale > 0.001 || state.particles.length > 0 || state.lasers.length > 0 || state.levelTransition) {
+        requestAnimationFrame(loop);
+    } else {
+        // Eğer her şey durduysa ve hala aktifse, oyunu durdur (Game Over durumundan sonra)
+        if(state.active && state.gameOver) state.active = false;
+    }
 }
 
 // --- KLAVYE KONTROLÜ ---
 document.addEventListener('keydown', (e) => {
-    if (!state.active || state.gameOver) return;
+    if (!state.active || state.gameOver || state.isPausedForLevel && !state.settings.skipWait) return;
     const key = e.key.toLowerCase();
     
     const targets = state.activeWords.filter(w => w.text[w.index] === key);
@@ -723,8 +914,7 @@ document.addEventListener('keydown', (e) => {
         const target = targets[0];
         const currentHitIndex = target.index; 
         
-        // ** 🔴 LAZERİ TETİKLEME KODU **
-        ctx.font = "bold 30px Orbitron";
+        ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         let precedingText = target.text.substring(0, currentHitIndex);
         const precedingWidth = ctx.measureText(precedingText).width;
         const charWidth = ctx.measureText(e.key).width;
@@ -755,42 +945,43 @@ document.addEventListener('keydown', (e) => {
         playSound('error');
         updateHUD();
         
-        // Kırmızı ekran efekti
         const flash = document.getElementById('error-flash');
         flash.style.opacity = 1;
         setTimeout(() => flash.style.opacity = 0, 100);
     }
 });
 
-// --- SES KONTROL LOGIC ---
-const soundToggleBtn = document.getElementById('sound-toggle');
+// --- AYARLAR KONTROL LOGIC ---
+const settingsButton = document.getElementById('settings-button');
+const settingsPanel = document.getElementById('settings-panel');
+const skipWaitCheckbox = document.getElementById('skip-wait');
 
-function toggleSound() {
-    state.soundEnabled = !state.soundEnabled;
-    updateSoundButtonUI();
-    
-    // Ses kapatılırsa, AudioContext'i duraklat (opsiyonel)
-    if (!state.soundEnabled && audioCtx.state === 'running') {
-        audioCtx.suspend();
-    } else if (state.soundEnabled && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-}
-
-function updateSoundButtonUI() {
-    if (state.soundEnabled) {
-        soundToggleBtn.innerText = SOUND_ON_ICON;
-        soundToggleBtn.classList.remove('muted');
+// Ayarlar panelini aç/kapat
+settingsButton.addEventListener('click', () => {
+    settingsPanel.classList.toggle('open');
+    if (settingsPanel.classList.contains('open')) {
+        settingsButton.style.color = 'var(--neon-pink)';
     } else {
-        soundToggleBtn.innerText = SOUND_OFF_ICON;
-        soundToggleBtn.classList.add('muted');
+        settingsButton.style.color = '#fff';
+    }
+});
+
+// Checkbox durumu değiştiğinde state'i ve localStorage'ı güncelle
+skipWaitCheckbox.addEventListener('change', () => {
+    state.settings.skipWait = skipWaitCheckbox.checked;
+    localStorage.setItem('skipWait', state.settings.skipWait ? 'true' : 'false');
+});
+
+// Ayarları yükle (localStorage'dan)
+function loadSettings() {
+    const skipWaitSaved = localStorage.getItem('skipWait');
+    if (skipWaitSaved === 'true') {
+        state.settings.skipWait = true;
+        skipWaitCheckbox.checked = true;
     }
 }
+loadSettings();
 
-soundToggleBtn.addEventListener('click', toggleSound);
-
-// Başlangıçta UI'ı güncelle
-updateSoundButtonUI();
 
 // --- 🌎 GLOBAL SIRALAMA SİSTEMİ (DENO API) ---
 
