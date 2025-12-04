@@ -632,7 +632,8 @@ class LevelTransition {
 class Word {
     constructor(text) {
         this.text = text;
-        this.index = 0;
+        this.index = 0; // Harf vurulduğunda artar (Kalıcı kırmızı olan harf sayısı)
+        this.pendingIndex = 0; // Tuş basıldığında artar (Bir sonraki keypress'in hedefi)
         ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         this.width = ctx.measureText(text).width;
         this.x = Math.random() * (w - this.width - 100) + 50;
@@ -641,17 +642,14 @@ class Word {
         this.hitEffect = new Array(this.text.length).fill(0);
         this.initialX = this.x;
         this.isBomb = false; 
-        // Düzeltme 2: Kelime uzunluğuna göre puanlama
         this.score = this.text.length * BASE_POINTS_PER_LETTER; 
     }
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
         if (!state.isPausedForLevel || state.settings.skipWait) {
-            // Hız azaltıldı (1.5 yerine 0.8)
             const baseSpeed = 0.8 + (state.level * 0.05); 
             this.y += baseSpeed * dt * state.timeScale * errorMultiplier; 
         }
-        // Hit efekti süresi azaltıldı
         for(let i=0; i<this.hitEffect.length; i++) {
             if(this.hitEffect[i] > 0) {
                 this.hitEffect[i] -= 1 * state.timeScale;
@@ -689,21 +687,22 @@ class Word {
                  ctx.shadowBlur = 0;
             }
             
-            // Düzeltme 3: Harf rengini hitEffect ve index'e göre belirle
+            // i < this.index = Kalıcı Kırmızı (Vurulmuş ve tamamlanmış)
+            // this.hitEffect[i] > 0 = Kırmızı Neon Flash (Lazer çarpıyor)
+            // i === this.pendingIndex = Beyaz (Bir sonraki tuş vuruşunun hedefi)
+            // Diğerleri = Beyaz
+
             if (i < this.index) {
-                // Harf yazılmış (Lazer isabet etmiş)
                 ctx.fillStyle = "#ff0055"; 
                 ctx.shadowColor = "#ff0055"; 
                 ctx.shadowBlur = Math.max(10, this.isBomb ? 10 : 0);
             } else if (this.hitEffect[i] > 0) {
-                // Harf lazer tarafından vuruldu (Kırmızı Neon Flash)
                 ctx.fillStyle = "var(--neon-red)"; 
                 ctx.shadowColor = "var(--neon-red)"; 
-                ctx.shadowBlur = 35 * (this.hitEffect[i] / 10); // Daha belirgin parlama
+                ctx.shadowBlur = 35 * (this.hitEffect[i] / 10);
             } else {
-                // Harf henüz yazılmamış ve vurulmamış (Beyaz)
                 ctx.fillStyle = "#ffffff";
-                ctx.shadowBlur = this.isBomb ? 10 : 0; // Bomb kelimesinin gölgesi kalsın
+                ctx.shadowBlur = this.isBomb ? 10 : 0;
             }
             
             ctx.fillText(char, currentX, this.y);
@@ -720,32 +719,38 @@ class Laser {
         this.targetWord = targetWord; 
         this.targetIndex = targetIndex; 
         
-        this.speed = 1200; // pikseller/saniye cinsinden hız (biraz hızlandırdım)
+        this.speed = 1200; 
         
         const dx = targetX - startX;
         const dy = targetY - startY;
         this.dist = Math.sqrt(dx * dx + dy * dy);
-        this.nx = dx / this.dist; // Normalleştirilmiş x yönü
-        this.ny = dy / this.dist; // Normalleştirilmiş y yönü
+        this.nx = dx / this.dist; 
+        this.ny = dy / this.dist; 
         
         this.traveled = 0;
         this.x = startX; 
         this.y = startY;
     }
     update(dt) {
-        const moveDist = this.speed * dt * state.timeScale / 60; // Gecikmeli hareket
+        const moveDist = this.speed * dt * state.timeScale / 60; 
         this.traveled += moveDist;
         
         if (this.traveled >= this.dist) {
-            // HEDEF VURULDU! - Düzeltme 3: Harf tam burada kırmızıya döner
-            this.targetWord.hitEffect[this.targetIndex] = 10; 
-            this.targetWord.index++; // Harfi yazılmış olarak işaretle
-            playSound('hit'); 
+            // HEDEF VURULDU!
             
-            // Kelime tamamlama kontrolü (Artık burada)
-            if (this.targetWord.index >= this.targetWord.text.length) {
-                completeWord(this.targetWord);
+            // Sadece, zaten başka bir lazer tarafından vurulmuşsa (index arttırılmışsa) bu lazeri göz ardı et.
+            // Bu, aynı harfi hedefleyen birden fazla lazeri engeller.
+            if (this.targetIndex === this.targetWord.index) {
+                this.targetWord.hitEffect[this.targetIndex] = 10; 
+                this.targetWord.index++; // Harfi yazılmış olarak işaretle (Kalıcı Kırmızı)
+                playSound('hit'); 
+                
+                // Kelime tamamlama kontrolü (Artık index kullanılıyor)
+                if (this.targetWord.index >= this.targetWord.text.length) {
+                    completeWord(this.targetWord);
+                }
             }
+            
             return true; // Lazeri yok et
         }
         
@@ -773,18 +778,18 @@ class Particle {
         this.x = x; this.y = y; this.type = type;
         this.life = 1.0;
         if (type === 'sand') {
-            this.vx = (Math.random() - 0.5) * 4; // Daha geniş dağılım
-            this.vy = -(Math.random() * 3 + 2); // Yukarı doğru fırlatma
-            this.size = Math.random() * 4 + 1.5; // Daha büyük parçacıklar
+            this.vx = (Math.random() - 0.5) * 4; 
+            this.vy = -(Math.random() * 3 + 2); 
+            this.size = Math.random() * 4 + 1.5; 
             this.color = '#ffffff';
-            this.gravity = 0.35; // Daha gerçekçi yerçekimi
+            this.gravity = 0.35; 
         } else if (type === 'bomb') {
             const angle = Math.random() * Math.PI * 2;
             const speed = Math.random() * 20 + 5;
             this.vx = Math.cos(angle) * speed;
             this.vy = Math.sin(angle) * speed;
             this.size = Math.random() * 8 + 3;
-            this.color = `hsl(${Math.random()*60}, 100%, 50%)`; // Sarıdan kırmızıya
+            this.color = `hsl(${Math.random()*60}, 100%, 50%)`;
             this.gravity = 0.1;
             this.friction = 0.98;
             this.life = 0.8;
@@ -852,7 +857,6 @@ function initGame() {
     state.levelTransition = null;
     state.bombWord = null; 
     
-    // HATA DÜZELTME: lastTime'ı sıfırla, böylece ilk döngüde büyük bir dt olmaz.
     state.lastTime = performance.now(); 
     
     document.getElementById('start-screen').classList.remove('active');
@@ -874,7 +878,7 @@ function nextLevel() {
     state.wordsCompleted = 0;
     playSound('complete');
     updateHUD();
-    state.bombWord = null; // Yeni seviyede bomb kelimesini sıfırla
+    state.bombWord = null;
 
     if (state.level > 1 && (state.level - 1) % 5 === 0) {
         state.timeScale = 1.0;
@@ -929,14 +933,13 @@ function completeWord(target) {
     if (target.isBomb) {
         triggerBomb(target);
     } else {
-        // Düzeltme 2: Kelime uzunluğunu ve seviyeyi puana dahil et.
         const errorMultiplier = getErrorMultiplier();
         state.score += target.score * state.level * errorMultiplier; 
         state.wordsCompleted++;
         playSound('complete');
         
         // 🍚 GELİŞTİRİLMİŞ KUM EFEKTİ (Sand Particles)
-        for(let i=0; i<150; i++) { // Daha yoğun ve fazla kum
+        for(let i=0; i<150; i++) { 
             state.particles.push(new Particle(
                 wordCenterX + (Math.random() - 0.5) * 30, 
                 wordCenterY + (Math.random() * 10), 
@@ -960,19 +963,16 @@ function triggerBomb(bombWord) {
     
     const totalScoreFromWords = state.activeWords
         .filter(w => w !== bombWord)
-        .reduce((sum, w) => sum + (w.score * state.level * errorMultiplier), 0); // Düzeltme 2: Seviye çarpanı eklendi
+        .reduce((sum, w) => sum + (w.score * state.level * errorMultiplier), 0);
         
-    // Bomb kelimesinin puanını da ekle (Lazer vuruşu ile index artırıldığı için bu kelime de sayılır)
     state.score += bombWord.score * state.level * errorMultiplier; 
     state.score += totalScoreFromWords;
     state.wordsCompleted += state.activeWords.length; 
 
-    // Patlama parçacıkları
     const bombCenterX = bombWord.x + bombWord.width / 2;
     const bombCenterY = bombWord.y + 15;
     for(let i=0; i<150; i++) state.particles.push(new Particle(bombCenterX, bombCenterY, null, 'bomb'));
     
-    // Tüm kelimeleri temizle
     state.activeWords = [];
     state.bombWord = null;
 
@@ -1032,7 +1032,6 @@ function loop(timestamp) {
     if (!state.gameOver && (!state.isPausedForLevel || state.settings.skipWait)) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
-        // Hız yavaşlatıldı: 90/30 yerine 200/60 aralığı
         const spawnRate = (200 - (state.level * 4)) / (errorMultiplier * state.timeScale);
         if (state.spawnTimer > Math.max(60, spawnRate)) {
             spawnWord();
@@ -1087,33 +1086,32 @@ document.addEventListener('keydown', (e) => {
     if (!state.active || state.gameOver || state.isPausedForLevel && !state.settings.skipWait) return;
     const key = e.key.toLowerCase();
     
-    // Düzeltme 1: Tüm uygun hedefleri bul
-    const targets = state.activeWords.filter(w => w.text[w.index] === key);
+    // Düzeltme: Artık pendingIndex kullanılarak tuşlanan harf kontrol edilir.
+    const targets = state.activeWords.filter(w => w.text[w.pendingIndex] === key);
     let target = null;
 
     if (targets.length > 0) {
-        // 1. Yazılmaya BAŞLANMIŞ kelimeleri kontrol et (index > 0)
-        let targetCandidates = targets.filter(w => w.index > 0);
+        // 1. Yazılmaya BAŞLANMIŞ kelimeleri kontrol et (pendingIndex > 0)
+        let targetCandidates = targets.filter(w => w.pendingIndex > 0);
 
         if (targetCandidates.length > 0) {
             // Yazılmaya başlanmış kelimeler arasında en üsttekini (en düşük Y) seç
             targetCandidates.sort((a, b) => a.y - b.y);
             target = targetCandidates[0];
         } else {
-            // 2. Yeni kelimeleri kontrol et (index === 0)
-            targetCandidates = targets.filter(w => w.index === 0);
+            // 2. Yeni kelimeleri kontrol et (pendingIndex === 0)
+            targetCandidates = targets.filter(w => w.pendingIndex === 0);
             if (targetCandidates.length > 0) {
                 // Yeni kelimeler arasında en üsttekini (en düşük Y) seç
                 targetCandidates.sort((a, b) => a.y - b.y);
                 target = targetCandidates[0];
             }
-            // Aksi takdirde (eğer targets.length > 0 iken buraya düşerse) hata var, ama yukarıdaki filtreler nedeniyle düşmemeli.
         }
         
         // --- BAŞARILI VURUŞ ---
-        if (target) {
+        if (target && target.pendingIndex < target.text.length) {
             
-            const currentHitIndex = target.index; 
+            const currentHitIndex = target.pendingIndex; // Lazerin hedefleyeceği index
             
             ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
             let precedingText = target.text.substring(0, currentHitIndex);
@@ -1125,13 +1123,16 @@ document.addEventListener('keydown', (e) => {
             const targetX = target.x + precedingWidth + charWidth / 2;
             const targetY = target.y + 15; 
 
-            // 🔴 LAZER ATEŞLEME (Index artırımı Laser.update içinde yapılacak)
+            // LAZER ATEŞLEME
             state.lasers.push(new Laser(startX, startY, targetX, targetY, target, currentHitIndex));
+            
+            // 🚀 PENDING INDEX ARTIŞI: Bir sonraki tuş vuruşu için kelimeyi sıraya al
+            target.pendingIndex++;
             
         } 
         
     } else {
-        // --- HATA VURUŞU (Hiçbir kelime bu harf ile ilerletilemez) ---
+        // --- HATA VURUŞU ---
         state.errors++; 
         playSound('error');
         updateHUD();
