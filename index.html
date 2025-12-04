@@ -6,7 +6,7 @@
     <title>MISTAKE - RELOADED</title>
     <style>
         /* ✅ FONT DEĞİŞİKLİĞİ: Türkçe karakterler için daha uygun font */
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&display=swap');
         
         :root {
             --neon-pink: #ff0055;
@@ -26,7 +26,12 @@
             height: 100vh;
         }
 
-        canvas { position: fixed; top: 0; left: 0; z-index: 1; }
+        /* Canvas artık Matrix Animasyonu için kullanılacak */
+        canvas { 
+            position: fixed; top: 0; left: 0; 
+            z-index: 1; 
+            background-color: var(--bg-dark); /* Arka planı koyu tut */
+        }
 
         /* UI KATMANLARI */
         #ui-layer {
@@ -38,7 +43,7 @@
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: none; pointer-events: auto;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(5px); /* Arkaplan animasyonunu hafifçe bulanıklaştır */
         }
 
         .screen.active { display: flex; }
@@ -46,21 +51,25 @@
         /* --- BAŞLANGIÇ EKRANI --- */
         #start-screen {
             flex-direction: row;
-            background: radial-gradient(circle at center, rgba(20,0,10,0.8), #000);
+            /* Arka plan animasyonu olduğu için gradienti kaldırıp saydamlaştırıyoruz */
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4), #000000); 
         }
 
         .left-panel {
             flex: 1;
             display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
+            /* ✅ DÜZENLEME: MISTAKE ve Başlat butonunu merkeze hizala */
+            justify-content: center; 
+            align-items: center;
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .right-panel {
-            width: 450px;
-            background: rgba(0, 0, 0, 0.8);
+            /* ✅ DÜZENLEME: Genişlik 450px'ten 300px'e küçültüldü */
+            width: 300px;
+            background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column;
-            padding: 20px;
+            padding: 20px 15px; /* Dikey padding azaltıldı */
             border-left: 2px solid var(--neon-blue);
         }
 
@@ -71,7 +80,7 @@
             text-shadow: 0 0 50px var(--neon-pink);
             margin-bottom: 30px;
             animation: pulse 3s infinite;
-            font-family: 'Orbitron', sans-serif; /* Başlıkta Orbitron'u koruyalım */
+            font-family: 'Orbitron', sans-serif;
         }
 
         button {
@@ -112,39 +121,47 @@
         /* --- SIRALAMA TABLOSU --- */
         #leaderboard-box {
             flex: 1;
+            /* ✅ DÜZENLEME: Kaydırmayı mümkün kılmak için boyutu ayarlandı */
+            max-height: calc(100vh - 120px); 
             overflow-y: auto;
             border: 1px solid var(--neon-blue);
             background: rgba(0, 243, 255, 0.05);
-            padding: 10px;
+            padding: 5px 10px; /* İç padding azaltıldı */
             border-radius: 8px;
+            font-size: 13px; /* Yazı boyutu küçültüldü */
         }
-        #leaderboard-box::-webkit-scrollbar { width: 8px; }
-        #leaderboard-box::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 4px; }
+        #leaderboard-box::-webkit-scrollbar { width: 6px; } /* Scrollbar küçültüldü */
+        #leaderboard-box::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
 
         .lb-header {
+            /* ✅ DÜZENLEME: Başlık küçültüldü */
             color: var(--neon-blue);
-            font-size: 24px; text-align: center; margin-bottom: 15px;
-            text-shadow: 0 0 10px var(--neon-blue);
+            font-size: 18px; 
+            text-align: center; 
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px var(--neon-blue);
             border-bottom: 1px solid rgba(0,243,255,0.3);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
             font-weight: bold;
         }
         
         .lb-grid-header {
+            /* ✅ DÜZENLEME: Kolon genişlikleri pencereye sığması için ayarlandı */
             display: grid;
-            grid-template-columns: 40px 1fr 80px 60px 60px;
-            padding: 10px;
-            font-size: 14px;
+            grid-template-columns: 30px 1fr 60px 40px 40px; 
+            padding: 5px 0;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             border-bottom: 1px solid rgba(255,255,255,0.2);
         }
 
         .lb-row {
+            /* ✅ DÜZENLEME: Kolon genişlikleri ve dikey padding ayarlandı */
             display: grid;
-            grid-template-columns: 40px 1fr 80px 60px 60px;
-            padding: 10px;
-            font-size: 14px;
+            grid-template-columns: 30px 1fr 60px 40px 40px;
+            padding: 5px 0;
+            font-size: 12px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .lb-rank { color: var(--neon-pink); font-weight: bold; }
@@ -225,7 +242,6 @@
             bottom: 20px;
             left: 20px;
             z-index: 15;
-            /* ✅ DÜZENLEME: Arka plan kutusu kaldırıldı */
             width: auto; 
             height: auto;
             padding: 0; 
@@ -236,16 +252,13 @@
             cursor: pointer;
             transition: transform 0.5s, color 0.3s; 
             pointer-events: auto;
-            /* ✅ YENİ DÜZENLEME: Sadece mavi neon gölge (dişli için) */
             text-shadow: 0 0 10px var(--neon-blue);
-            /* Siyah kutucuğu gösteren arka plan kutu gölgesi (box-shadow) kaldırıldı */
             box-shadow: none; 
         }
         
         #settings-button:hover {
-            transform: rotate(360deg); /* 1 tam tur */
+            transform: rotate(360deg);
             color: var(--neon-blue);
-            /* ✅ YENİ DÜZENLEME: Üzerine gelindiğinde oluşan beyaz aydınlatma kaldırıldı */
             text-shadow: 0 0 15px var(--neon-blue); 
         }
         
@@ -258,9 +271,8 @@
             background: rgba(0, 0, 0, 0.85);
             border: 2px solid var(--neon-blue);
             border-radius: 8px;
-            transform-origin: 0% 100%; /* Sol alt köşe */
+            transform-origin: 0% 100%;
             
-            /* Başlangıçta görünmez/küçük ve dönük */
             transform: scale(0) rotate(45deg); 
             opacity: 0;
             transition: transform 0.4s ease-out, opacity 0.4s ease-out;
@@ -363,7 +375,7 @@
             <button id="btn-start" class="primary">BAŞLA</button>
         </div>
         <div class="right-panel">
-            <div class="lb-header">GLOBAL SIRALAMA</div>
+            <div class="lb-header">SIRALAMA</div> 
             <div id="leaderboard-box">
                 <div style="text-align:center; color:#666; padding:20px;">Yükleniyor...</div>
             </div>
@@ -406,7 +418,7 @@
     </div>
 
     <div class="setting-item">
-        <label for="skip-wait">BÖLÜM GEÇİŞLERİNİ KAPAT</label>
+        <label for="skip-wait">BÖLÜM BEKLEMESİNİ KAPAT</label>
         <input type="checkbox" id="skip-wait">
     </div>
 </div>
@@ -464,20 +476,17 @@ function updateVolume() {
 
 // Sesleri oynatırken masterGain kullan
 function playSound(type) {
-    // Ses seviyesi 0 ise oynatma
     if (masterGain.gain.value === 0) return;
-    
     if(audioCtx.state === 'suspended') audioCtx.resume();
     
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     
     osc.connect(gain);
-    gain.connect(masterGain); // Master Gain'e bağlandı
+    gain.connect(masterGain); 
 
     const now = audioCtx.currentTime;
     
-    // Ses seviyeleri master gain'e bırakıldığı için buradaki çarpanlar biraz daha yüksek tutuldu
     if (type === 'hit') {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(800, now);
@@ -523,6 +532,70 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let w, h;
 
+// Matrix Yağmuru için değişkenler
+let columns, drops;
+const FONT_SIZE = 15;
+const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+=-{}[]:;"\'<>,.?/|\\'; 
+
+function initMatrix() {
+    columns = Math.floor(w / FONT_SIZE);
+    drops = [];
+    for (let i = 0; i < columns; i++) {
+        drops[i] = { 
+            y: Math.random() * h, 
+            speed: Math.random() * 0.8 + 0.2,
+            charIndex: Math.floor(Math.random() * CHARS.length) 
+        };
+    }
+}
+
+function drawMatrix(dt) {
+    // Siyah, hafif saydam bir katman çizerek eski karakterlerin iz bırakmasını sağla
+    ctx.fillStyle = 'rgba(5, 5, 5, 0.08)'; 
+    ctx.fillRect(0, 0, w, h);
+    
+    ctx.font = FONT_SIZE + 'px monospace';
+    
+    for (let i = 0; i < drops.length; i++) {
+        const drop = drops[i];
+        const x = i * FONT_SIZE;
+        const y = drop.y;
+        
+        const char = CHARS[drop.charIndex];
+        
+        // Parlak Kırmızı (Ön karakter)
+        ctx.fillStyle = 'var(--neon-red)'; 
+        ctx.shadowColor = 'var(--neon-red)';
+        ctx.shadowBlur = 5;
+        ctx.fillText(char, x, y);
+        
+        // Koyu Kırmızı (İz)
+        const trailLength = 8; 
+        for(let j=1; j<trailLength; j++) {
+            const trailAlpha = 0.5 * (1 - (j / trailLength));
+            ctx.fillStyle = `rgba(255, 0, 85, ${trailAlpha})`; 
+            ctx.shadowBlur = 0;
+            ctx.fillText(CHARS[(drop.charIndex - j + CHARS.length) % CHARS.length], x, y - j * FONT_SIZE);
+        }
+        
+        drop.y += drop.speed * FONT_SIZE * 0.5 * dt;
+
+        // Karakter ekran dışına çıkarsa, yukarıdan rastgele bir yerden tekrar başlat
+        if (drop.y > h && Math.random() > 0.97) {
+            drop.y = 0;
+            drop.charIndex = Math.floor(Math.random() * CHARS.length);
+            drop.speed = Math.random() * 0.8 + 0.2;
+        }
+        
+        // Karakteri değiştir
+        if (Math.random() > 0.9) {
+            drop.charIndex = (drop.charIndex + 1) % CHARS.length;
+        }
+    }
+    ctx.shadowBlur = 0; 
+}
+
+
 let state = {
     active: false,
     gameOver: false,
@@ -547,6 +620,7 @@ let state = {
 function resize() {
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
+    initMatrix(); // Ekran boyutu değiştiğinde matrix'i yeniden başlat
 }
 window.addEventListener('resize', resize);
 resize();
@@ -851,7 +925,16 @@ function spawnWord() {
 
 // --- ANA DÖNGÜ & ÇİZİM ---
 function loop(timestamp) {
-    if (!state.active) return;
+    if (!state.active && !state.gameOver) { 
+        // Sadece başlangıç ekranındayken Matrix'i çiz
+        const dt = (timestamp - state.lastTime) / 16.66;
+        state.lastTime = timestamp;
+        drawMatrix(dt);
+        requestAnimationFrame(loop);
+        return;
+    }
+
+    // Oyun İçi Döngü
     const dt = (timestamp - state.lastTime) / 16.66;
     state.lastTime = timestamp;
 
@@ -1061,6 +1144,8 @@ async function updateLeaderboardUI() {
     lbBox.innerHTML = '<div style="text-align:center; padding:20px; color:#666">GLOBAL SIRALAMA YÜKLENİYOR...</div>';
     
     const scores = await getGlobalScores();
+    // ✅ DÜZENLEME: İlk 50 kullanıcıyı al
+    const limitedScores = scores.slice(0, 50);
 
     lbBox.innerHTML = '';
     
@@ -1076,14 +1161,18 @@ async function updateLeaderboardUI() {
     `;
     lbBox.appendChild(headerDiv);
 
-    if(scores.length === 0) {
+    if(limitedScores.length === 0) {
         lbBox.innerHTML += '<div style="text-align:center; padding:20px; color:#666">Global kayıt yok.</div>';
         return;
     }
-
-    scores.slice(0, 100).forEach((entry, i) => {
+    
+    // Sıralama satırları
+    limitedScores.forEach((entry, i) => {
         const div = document.createElement('div');
         div.className = 'lb-row';
+        // İlk 10'un gösterilmesi için CSS'te özel bir şey yapmaya gerek yok, 
+        // çünkü scrollbar ile 50'ye kadar kaydırılacak. 
+        // İlk 10'u vurgulamak isterseniz (i < 10) koşuluyla ek CSS sınıfı eklenebilir.
         div.innerHTML = `
             <div class="lb-rank">${i+1}.</div>
             <div class="lb-nick">${entry.nick}</div>
@@ -1100,9 +1189,9 @@ document.getElementById('btn-start').addEventListener('click', initGame);
 document.getElementById('btn-save').addEventListener('click', saveGlobalScore);
 document.getElementById('btn-menu').addEventListener('click', () => location.reload()); 
 
-// Başlat (Sıralamayı yükle)
+// Başlat (Sıralamayı yükle ve Matrix animasyonunu başlat)
 updateLeaderboardUI();
-
+requestAnimationFrame(loop); // İlk çağrıda Matrix'i çalıştırması için
 </script>
 </body>
 </html>
