@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MISTAKE - RELOADED</title>
     <style>
-        /* ✅ FONT DEĞİŞİKLİĞİ: Türkçe karakterler için daha uygun font */
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&display=swap');
         
         :root {
@@ -26,10 +25,12 @@
             height: 100vh;
         }
 
-        /* Canvas artık Matrix Animasyonu için kullanılacak */
+        /* ✅ DÜZENLEME: Canvas tüm ekranı kaplar ve en alt katmandadır */
         canvas { 
             position: fixed; top: 0; left: 0; 
             z-index: 1; 
+            width: 100%;
+            height: 100%;
             background-color: var(--bg-dark); 
         }
 
@@ -52,51 +53,45 @@
         #start-screen {
             flex-direction: row;
             background: radial-gradient(circle at center, rgba(0,0,0,0.4), #000000); 
+            justify-content: center; /* Merkezi hizalama için */
+            align-items: center; /* Merkezi hizalama için */
         }
 
-        /* ✅ DÜZENLEME: Ana menü (left-panel) için hesaplama yapıldı */
-        .left-panel {
-            flex-grow: 1; 
-            /* Sağ panel 300px olduğu için, sol panelin sağdan 150px kadar daha küçük olması gerekir ki 
-               toplamda ekranın ortasında kalsın (W - 300) / 2 */
-            margin-right: 300px; 
-            display: flex; flex-direction: column;
-            justify-content: center; 
-            align-items: center;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            /* Bu panelin sadece merkezi (MISTAKE ve BAŞLA) ekranın ortasına gelsin */
-            /* Flex-grow 1 ile genişleyecek. Hesaplama için aşağıdaki right-panel'e bakınız. */
-            
-            /* DÜZELTME: Bu kısmı JavaScript'te viewport'a göre ayarlayalım. CSS ile tam ortalamak zor */
-            /* Geçici olarak flex-start'tan başlatalım ve transform ile ortalayalım. */
-            margin-right: 0; /* Geri sıfırla */
-            width: 100%; /* Tamamını kapla */
-        }
-        
-        /* ✅ YENİ DÜZENLEME: MISTAKE ve BAŞLAT Butonunu Tam Ortalamak için Container */
+        /* ✅ DÜZENLEME: MISTAKE ve BAŞLAT Butonunu Tam Ortalamak için Container */
         .center-content {
             position: absolute;
             left: 50%;
             top: 50%;
-            /* Kendi boyutunun yarısı kadar geri çek */
-            transform: translate(calc(-50% - 150px), -50%); /* 150px, sağ panelin yarısıdır (300/2) */
+            /* Kendi boyutunun yarısı kadar geri çek - Ekranın tam ortası */
+            transform: translate(-50%, -50%); 
             display: flex;
             flex-direction: column;
             align-items: center;
+            pointer-events: auto;
         }
         
-        /* Sağdaki sıralama panelini ekranın sağ tarafına sabitle */
+        /* ✅ DÜZENLEME: Sıralama panelini sol ortaya sabitle */
         .right-panel {
             position: absolute;
-            top: 0;
-            right: 0;
-            /* ✅ DÜZENLEME: Genişlik 300px */
+            top: 50%;
+            left: 10%; /* Sol taraftan biraz içeride */
+            transform: translateY(-50%);
+            
+            /* Boyutlar önceki haliyle aynı */
             width: 300px;
-            height: 100%;
+            max-height: 400px; /* Küçük kalması için max yükseklik */
+            
             background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column;
             padding: 20px 15px; 
-            border-left: 2px solid var(--neon-blue);
+            /* ✅ DÜZENLEME: Mavi çizgi (border-left) kaldırıldı */
+            border: 2px solid var(--neon-blue); /* Sadece çerçeve (köşesiz dörtgen) kalsın */
+            pointer-events: auto;
+        }
+        
+        /* Aşağıdaki left-panel artık kullanılmayacak, center-content tüm işi yapıyor. */
+        .left-panel {
+            display: none; /* Gizle */
         }
 
         h1 {
@@ -126,17 +121,27 @@
             border-radius: 5px;
         }
 
+        button:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 30px #fff;
+            transform: scale(1.05);
+        }
+
         button.primary {
             border-color: var(--neon-pink);
             color: var(--neon-pink);
             box-shadow: 0 0 15px var(--neon-pink);
         }
+        button.primary:hover {
+            background: var(--neon-pink);
+            color: #000;
+            box-shadow: 0 0 50px var(--neon-pink);
+        }
 
         /* --- SIRALAMA TABLOSU --- */
         #leaderboard-box {
-            /* ✅ DÜZENLEME: Maksimum yükseklik ayarlandı (yaklaşık 10 satır + başlık için yeterli) */
-            max-height: 400px; 
-            /* ✅ DÜZENLEME: Sadece ilk 10 gösterileceği için kaydırma kapatıldı */
+            max-height: 340px; /* 10 satır ve başlığa yetecek kadar küçültüldü */
             overflow-y: hidden; 
             border: 1px solid var(--neon-blue);
             background: rgba(0, 243, 255, 0.05);
@@ -144,7 +149,6 @@
             border-radius: 8px;
             font-size: 13px; 
         }
-        /* Kaydırma kapatıldığı için scrollbar stili kaldırıldı. */
 
         .lb-header {
             color: var(--neon-blue);
@@ -158,7 +162,6 @@
         }
         
         .lb-grid-header, .lb-row {
-            /* Kolon genişlikleri pencereye sığması için ayarlandı */
             display: grid;
             grid-template-columns: 30px 1fr 60px 40px 40px; 
             padding: 5px 0;
@@ -166,14 +169,96 @@
             font-weight: bold;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        /* ... diğer sıralama stilleri ... */
+        .lb-rank { color: var(--neon-pink); font-weight: bold; }
+        .lb-nick { color: #ddd; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .lb-score { color: var(--neon-blue); text-align: right; font-weight: bold; }
+        .lb-errors { color: var(--neon-red); text-align: center; }
+        .lb-level { color: #00f3ff; text-align: center; }
 
 
-        /* --- OYUN SONU EKRANI VE DİĞERLERİNDE DEĞİŞİKLİK YOK --- */
+        /* --- AYARLAR BUTONU VE PENCERESİ CSS (Geri Getirildi) --- */
+        #settings-button {
+            /* ✅ DÜZENLEME: Geri getirildi ve konum korundu */
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 15;
+            width: auto; 
+            height: auto;
+            padding: 0; 
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            transition: transform 0.5s, color 0.3s; 
+            pointer-events: auto;
+            text-shadow: 0 0 10px var(--neon-blue);
+            box-shadow: none; 
+        }
+        
         #settings-button:hover {
             transform: rotate(360deg);
             color: var(--neon-blue);
             text-shadow: 0 0 15px var(--neon-blue); 
+        }
+        
+        #settings-panel {
+            position: fixed;
+            bottom: 80px; 
+            left: 20px;
+            width: 300px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            transform-origin: 0% 100%;
+            
+            transform: scale(0) rotate(45deg); 
+            opacity: 0;
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+            
+            pointer-events: none; 
+            z-index: 14;
+        }
+        
+        #settings-panel.open {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+        }
+        
+        #settings-panel > .setting-item { margin-top: 15px; }
+        #volume-range { 
+            -webkit-appearance: none; appearance: none; width: 100%; height: 8px; 
+            background: transparent; margin: 0; cursor: pointer;
+        }
+        #volume-range::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 15px; height: 15px;
+            border-radius: 50%; background: var(--neon-blue); cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        /* ... Diğer ayar stilleri (Checkbox vb.) ... */
+        .setting-item input[type="checkbox"] {
+            -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+            border: 1px solid var(--neon-blue); border-radius: 3px;
+            background: rgba(0, 243, 255, 0.1); cursor: pointer; position: relative;
+        }
+        .setting-item input[type="checkbox"]:checked {
+            background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue);
+        }
+        .setting-item input[type="checkbox"]:checked::after {
+            content: '✓'; position: absolute; top: -2px; left: 2px;
+            color: #000; font-size: 14px; line-height: 1;
         }
 
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
@@ -187,12 +272,11 @@
 <div id="ui-layer">
     
     <div id="start-screen" class="screen active">
-        <div class="left-panel">
-            <div class="center-content">
-                <h1>MISTAKE</h1>
-                <button id="btn-start" class="primary">BAŞLA</button>
-            </div>
+        <div class="center-content">
+            <h1>MISTAKE</h1>
+            <button id="btn-start" class="primary">BAŞLA</button>
         </div>
+        
         <div class="right-panel">
             <div class="lb-header">SIRALAMA</div> 
             <div id="leaderboard-box">
@@ -349,7 +433,6 @@ let w, h;
 // Matrix Yağmuru için değişkenler
 let columns, drops;
 const FONT_SIZE = 15;
-// ✅ DÜZENLEME: Türkçede sıkça kullanılan karakterleri ekledim
 const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+=-{}[]:;"\'<>,.?/|\\ğüşiöçĞÜŞİÖÇ'; 
 
 function initMatrix() {
@@ -358,7 +441,7 @@ function initMatrix() {
     for (let i = 0; i < columns; i++) {
         drops[i] = { 
             y: Math.random() * h, 
-            speed: Math.random() * 0.8 + 0.4, // Biraz hız artırıldı
+            speed: Math.random() * 0.8 + 0.4, 
             charIndex: Math.floor(Math.random() * CHARS.length) 
         };
     }
@@ -386,9 +469,9 @@ function drawMatrix(dt) {
         ctx.fillText(char, x, y);
         
         // Koyu Kırmızı (İz) - Daha belirgin izler
-        const trailLength = 12; // İz uzunluğu artırıldı
+        const trailLength = 12; 
         for(let j=1; j<trailLength; j++) {
-            const trailAlpha = 0.3 * (1 - (j / trailLength)); // Opaklık ayarlandı
+            const trailAlpha = 0.3 * (1 - (j / trailLength)); 
             ctx.fillStyle = `rgba(255, 0, 85, ${trailAlpha})`; 
             ctx.shadowBlur = 0;
             ctx.fillText(CHARS[(drop.charIndex - j + CHARS.length) % CHARS.length], x, y - j * FONT_SIZE);
@@ -396,15 +479,13 @@ function drawMatrix(dt) {
         
         drop.y += drop.speed * FONT_SIZE * 0.5 * dt;
 
-        // Karakter ekran dışına çıkarsa, yukarıdan rastgele bir yerden tekrar başlat
-        if (drop.y > h && Math.random() > 0.95) { // Tekrar başlama olasılığı artırıldı
+        if (drop.y > h && Math.random() > 0.95) { 
             drop.y = 0;
             drop.charIndex = Math.floor(Math.random() * CHARS.length);
             drop.speed = Math.random() * 0.8 + 0.4;
         }
         
-        // Karakteri değiştir
-        if (Math.random() > 0.85) { // Değişim sıklığı artırıldı
+        if (Math.random() > 0.85) { 
             drop.charIndex = (drop.charIndex + 1) % CHARS.length;
         }
     }
@@ -434,6 +515,7 @@ let state = {
 };
 
 function resize() {
+    // ✅ DÜZENLEME: Ekran boyutlarını yeniden ayarla
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
     initMatrix(); 
@@ -737,8 +819,12 @@ function loop(timestamp) {
         if (state.timeScale < 0.01) state.timeScale = 0;
     }
 
+    // Matrix animasyonu burada çizilmeyecek, sadece oyuna özel öğeler çizilecek.
     ctx.clearRect(0, 0, w, h);
 
+    // Matrix animasyonu tüm ekranı kapladığı için burada temizlemeye gerek yok, 
+    // ancak oyun alanını korumak için isterseniz arka planı yine de karartabilirsiniz.
+    
     // LAZER ÇİZİMİ
     if(state.active && !state.gameOver) {
         const laserY = h - 100;
@@ -933,7 +1019,6 @@ async function updateLeaderboardUI() {
     lbBox.innerHTML = '<div style="text-align:center; padding:20px; color:#666">SIRALAMA YÜKLENİYOR...</div>';
     
     const scores = await getGlobalScores();
-    // ✅ DÜZENLEME: Sadece ilk 10 kullanıcıyı al
     const limitedScores = scores.slice(0, 10); 
 
     lbBox.innerHTML = '';
