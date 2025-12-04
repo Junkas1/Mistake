@@ -1040,11 +1040,11 @@ function loop(timestamp) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
         
-        // >>> KULLANICI İSTEĞİ 2: Kelime doğuş hızını 3 kat arttır (100-> ~33, Min 30->10) <<<
-        const baseSpawnTime = 33 - (state.level * 0.67); 
+        // >>> KULLANICI İSTEĞİ: Kelime doğuş hızını eski haline geri getir (~3 kat daha yavaş, 100'den başla) <<<
+        const baseSpawnTime = 100 - (state.level * 0.7); // Level 1'de ~99, Level 100'de ~30
         const spawnRate = baseSpawnTime / (errorMultiplier * state.timeScale);
         
-        if (state.spawnTimer > Math.max(10, spawnRate)) {
+        if (state.spawnTimer > Math.max(30, spawnRate)) { // Minimum bekleme süresi 30ms olarak belirlendi
             spawnWord();
             state.spawnTimer = 0;
         }
