@@ -11,7 +11,7 @@
             --neon-pink: #ff0055;
             --neon-blue: #00f3ff;
             --neon-red: #ff3333; 
-            --neon-yellow: #ffdd00; /* Yeni Sarı Neon */
+            --neon-yellow: #ffdd00; 
             --bg-dark: #050505;
             --font-main: 'Share Tech Mono', monospace; 
         }
@@ -413,9 +413,12 @@
 
 const DENO_API_URL = 'https://junkas1-mistake-68.deno.dev'; 
 
+// Kelime bazlı puanlama için yeni sabit
+const BASE_POINTS_PER_LETTER = 10; 
+
 // Yeni kelime listesi
 const KELIMELER = [
-    "masa","çanta","bahçe","araba","kablo","karga","balık","simit","kıyı","kazak","bilet","yıldız","duman","çorap","kalem","saman","tarla","gölge","bıçak","soğan","deniz","orman","tavan","çocuk","gülme","pencere","çimen","aroma","sokak","çukur","kavun","dudak","güven","kültür","hüzün","sandal","gömlek","ceviz","buhur","göbek","kiraz","kadeh","tavuk","koyun","eşlik","kertenkele","fırça","mermi","yumurta","zambak","gökyüzü","maymun","çekiç","tablo","çerçeve","kavanoz","merdiven","anahtar","kaplan","sünger","tencere","kova","tarak","çakmak","kerten","yumruk","paspas","halı","etraf","gemi","görev","defter","kitap","makas","çatal","kaşık","tabak","peçete","zeytin","peynir","köfte","tatlı","börek","çorba","pirinç","mendil","silgi","dosya","kutu","çıta","salça","kabak","şemsiye","aralık","keman","davul","zurna","yorgan","yastık","battaniye","koltuk","sandalye","sehpa","buzluk","fırın","ocak","buhar","çaydanlık","şampuan","sabun","havlu","ayna","dolap","kırlent","nefes","çeyrek","yarım","sayıcı","yolcu","yığın","karşı","çizgi","banka","kredi","cüzdan","gönderi","kargo","arşiv","kalıp","yaprak","çiçek","tohum","balon","nehir","dere","kanyon","ova","çöl","göl","kıyı","rüzgar","yağmur","karanlık","ışıldak","kirpik","eylem","öneri","vergi","kural","yönetim","toplum","halka","pazar","market","mağaza","kasa","fiş","makbuz","kırıntı","çöp","kavanoz","kavanoz","süzgeç","tornavida","kerpeten","çivi","vida","perde","kolye","bilezik","yüzük","küpe","kazma","kürek","saban","çekiç","zımpara","deterjan","yapıştırıcı","mandal","iplik","çember","sarma","zihin","akıl","fikir","düşünce","hayal","umut","sevgi","özlem","korku","öfke","sevinç","merak","sürpriz","şüphe","heyecan","gurur","kıskançlık","saygı","vicdan","talep","yetenek","beceri","alışkanlık","işlem","sistem","düzen","plan","taslak","amaç","hedef","başarı","gelişim","deneme","yanıt","cevap","sahne","perde","oyuncu","seyirci","alkış","tiyatro","sinema","kamera","ekran","projeksiyon","klavye","fare","hoparlör","kulaklık","mikrofon","yazıcı","toner","fişek","proje","kayıt","yazılım","şifre","bilgi","bağlantı","süreç","kulübe","ambar","depo","raf","kutu","torba","kap","şişe","bidon","testi","tabure","zımba","kalemtıraş","çizim","palet","fırça","boya","tuval","çivi","pompa","rende","keşif","yolculuk","tatil","seyahat","otel","bilet","güzergah","durak","istasyon","peron","otobüs","taksi","uçak","gemi","liman","kaptan","şoför","şerit","trafik","kavşak","yaya","köprü","tünel","yol","şerit","asfalt","çukur","set","çizgi","tarife","ücret","fatura","makbuz","toprak","kum","çakıl","çakmaktaşı","çakı","bıçak","makas","testere","kanca","halat","çadır","kapsül","torpil","merhem","sargı","bandaj","çorap","pantolon","kazak","gömlek","ceket","palto","ayakkabı","bot","çizme","kemer","şapka","bere","eldiven","atkı","cüzdan","çantacı","çanta","askı","fermuar","düğme","yaka","ilmek","örgü","iplik","tığ","şiş","örgücü","pasta","çikolata","şeker","lokum","bisküvi","kek","puding","marmelat","reçel","pekmez","helva","tahin","susam","fındık","fıstık","ceviz","badem","kayısı","üzüm","erik","kiraz","vişne","dut","nar","kahve","çaycı","çaydanlık","demlik","fincan","bardak","tabak","tepsi","sürahi","kavanoz","konserve","maden","çelik","alüminyum","plastik","kumaş","deri","kuyruk","kanat","pençe","tırnak","kuyruk","kılçık","kertenkele","bukalemun","serçe","kırlangıç","leylek","karınca","arıcı","sinek","örümcek","kurtçuk","tavşan","tilki","çakal","kurt","ayı","kaplan","aslan","balina","yunus","fok","martı","şahin","doğan","kartal","kömür","çakıl","çakmak","kavanoz","sünger","yastık","battaniye","sazlık","kaygan","sazlık","eğlence","yemek","tarhana","köfteci","çoban","çubuk","düğme","fermuar","sokak","cadde","meydan","kordon","yokuş","vadı","tepki","görevli","yönetici","kaptan","yolculuk","işaret","durum","bilinç","seçenek","koşul","ölçek","kıyas","şekil","örnek","çözüm","bütün","parça","yapı","çatı","duvar","zemin","teras","mermer","tuğla","çimento","harç","kiriş","kolon","rafya","çerçeve","şemsiye","fırtına","gökgürültü","şimşek","yayla","dereye","çamlık","kanyon","kayalık","çölleşme","fidan","oduncu","bahçıvan","bostan","ekili","çayırlık","otlak","meraya","otlama","serpmek","kaynatmak","kavurmak","doğramak","karıştırmak","pişirmek","soğutmak","buzlamak","dilimlemek","yoğurmak","kızartmak","karabiber","kekik","nane","maydanoz","fesleğen","çemen","tarçın","zencefil","zerdeçal","defne","hibrit","aroma","bileşen","karışım","çözünür","durultma","süzme","kıvam","katman","bant","paket","ambar","koli","palet","çeki","dosya","arsiv","katalog","liste","tablo","kılavuz","harita","çizim","tasarım","prototip","model","şablon","pano","çizelge","safha","hamle","denge","doku","ahenk","ritim","tempo","melodi","ezgi","koridor","balkon","otobüs","servis","dolmuş","metro","tramvay","tünel","gişe","biletçi","şoförlük","motorcu","sektör","ticaret","sanayi","piyasa","kâr","zarar","stok","ambar","sevkiyat","irsaliye","üretim","imalat","işçilik","atölye","fabrika","tesis","çalışma","mesai","vardiya","girişim","şirket","kırtasiye","gelir","gider","beyan","kayıt","arşivci","inceleme","rapor","önerge","taslak","onay","ret","ölçüm","kontrol","dönüş","akış","sistem","kulüp","dernek","vakıf","toplantı","kongre","seminer","etkinlik","festival","gösteri","yürüyüş","kortej","ziyaret","tören","karşılama","çıkış","giriş","kabul","çanta","yolculuk","rota","sefer","liman","iskele","kaptan","tayfa","güverte","gemi","yüzen","batık","sal","yelken","kürek","sınır","kontrol","nöbet","devriye","karakol","birim","ekip","merkez","acil","ambulans","hasta","tedavi","yatak","serum","ilaç","reçete","bandaj","pansuman","ateş","nabız","solunum","klinik","poliklinik","röntgen","film","grafik","çizgi","ölçü","hesap","toplama","çıkarma","çarpma","bölme","işlem","katsayı","oran","orantı","dizi","kural","tanım","örn","bilgi","liste","alan","hacim","değer","miktar","boyut","paket","küme","doku","lif","kütle","yoğunluk","buhar","duman","yakıt","motor","şanzıman","janta","lastik","rot","salıncak","far","sinyal","ayna","tırnak","kıymık","zar","kıkırdak","doku","kas","sinir","bağ","damar","hücre","doktor","hemşire","eczane","ölçek","kıvam","uygulama","donanım","yazılım","arayüz","sürüm","haber","gündem","gazete","dergi","manşet","yazar","yorum","kanal","anten","radyo","mikser","kamera","tripod","ışık","stüdyo","merkez","büro","düzen","takım","çember","bilek","dirsek","omuz","kalça","sinema","salonu","bilet","gişe","perde","koltuk","yorumcu","izleyici","şarkı","müzik","nota","ton","kayıt","albüm","opera","bale","tiyatro","oyun","prova","sahne","perde","dekor","aksesuar","avize","kutuplaşma","denge","korkuluk","mezarlık","lahit","kabir","ziyaretçi","çelenk","çiçekçi","baharatçı","nakliye","uçuş","kaptan","denetçi","kontrolör","kılavuz","haritalama","yönlendirme","panel","sayaç","gösterge","kumanda","tuş","kutu","makara","yay","makine","tasma","kayış","çark","verici","alıcı","anten","hoparlör","kulaklık","amfi","modem","yazıcı","tarayıcı","sunucu","veritabanı","sorgu","döngü","depolama","ortam","çözücü","kaynak","çevrim","parola","kimlik","oturum","ayar","kiralık","araç","ekipman","parça","tasarruf","birikim","katalog","gönderi","posta","zarf","pul","paket","kolye","bilezik","madalya","anahtarlık","kutu","sepet","şişe","metal","kalıp","kanca","kablo","fiş","priz","adaptör","üstlük","pantolon","etek","gömlek","çorap","ayakkabı","terlik","çizme","palto","pijama","gecelik","eşofman","yedek","çelik","kanıt","bulgu","notlar","yönerge","ısınma","soğuma","kaynama","durgun","çalkantı","yanardağ","atmosfer","güneşlik","zamanlama","program","rehber","defter","mühür","kalemlik","zımba","geçiş","izleme","arka","çiftlik","ahır","çoban","çobanlık","ördek","kaz","horoz","barınak","kulübe","tasma","yemlik","suluk","çim biçme","toplama","serpiştirme","armağan","miras","paylaşım","balçık","çamur","kayık","sahil","kıyafet","çevre","doğal","ormanlık","kayın","meşe","çınar","dutluk","çardak","çardakçı","fidanlık","bahçeci","seracı","fidancı","sulama","damlama","yağmurlama","hortum","musluk","pimaş","künk","kuyu","pompa","jeneratör","havaalanı","kalkış","iniş","görevli","kontuar","bavul","çantacı","pasaport","kimlik","ruhsat","numara","kuşluk","akşamüstü","şafak","tanyeri","günbatımı","günorta","alaca","karanlık","ay ışığı","gölcük","yaygın","zenginlik","fakirlik","cesaret","kararlılık","sabırlı","uyumlu","dürüst","nazik","kibar","sakin","hırslı","çalışkan","tembel","dalgın","unutkan","cesur","ürkek","telaşlı","şaşkın","baharat","bulyon","şekerlik","tuzluk","kapak","kaplama","tencere","kalbur","öğütücü","aktarlık","kuyumcu","manav","bakkal","şarküteri","fırıncı","pazarcı","tezgâhtar","kasiyer","müdürlük","yönetmelik","duyuru","işlemci","bellek","disk","kayıtçı","arşivleme","sürücü","çalıştırıcı","denetleme","sunum","belge","çözümleme","grafikçi","tasarımcı","yazılımcı","mimar","tekniker","usta","çırak","ambarcı","depo","rafçı","stokçu","kırılması","onarma","tamirat","tesisat","doğalgaz","boru","vana","bağlantı","sızdırma","yalıtım","kaplama","çatıcılık","boyahane","işçilik","üretken","verimli","eksiksiz","tamamlanmış","hazırlık","kontrolcü","izleme","değerlendirme","fişleme","dosyalama","klasör","evrak","for","form","raporlama","döküm","çözüm","içerik","paylaşım","görsel","şablon","dizgi","pencere","ayarlar","bileşen","modül","yenilik","geliştirme","test","deneme","tasarım","çizimci","maket","heykel","galeri","sergi","atölye","çıraklık","usta","çırpıcı","karıştırıcı","karıştırma","süzgeç","tava","tencere","sap","gövde","kaplama","çelikçi","metalci","kalay","bakır","pirinç","demirci","dökümcü","çarkçı","kaynakçı","kılavuzluk","yönlendirme","işaretçi","ölçer","metre","kumpas","çıpa","halat","bağlantı","kasnak","vida","cıvata","somun","pense","kargaburun","kerpeten","tornavida","rende","rendeleme","kazıyıcı","çakı","testere","jig","ayarlı","çarklı","kaplama","maskeleme","boyama","baskı","kopya","tarama","uygulama","kayıt","akış","şablon","modelci","mizanpaj","renkli","renksiz","yoğun","hafif","berrak","bulanık","katı","sıvı","gaz","erime","donma","buharlaşma","çözünme","birleşim","tepkime","ısıtma","soğutma","öğütme","kaynatma","pişirme","kızartma","haşlama","fermente","mayalama","katkı","kemik","iskelet","doku","bağ","kıkırdak","bilek","göğüs","omurga","kaburga","çene","kulak","burun","gözlük","mercek","çerçeve","kulplu","saplama","çatlak","yarık","çukur","gözlem","inceleme","analiz","yorumlama","tartışma","toplantı","oturum","panel","konferans","seminer","atölye","çalıştay","fikir","öneri","tasarı","plan","proje","takvim","program","günlük","çizelge","liste","madde","özet","notlar","gelişme","duyuru","bildirim","kayıt","dosya","fihrist","arşiv","kapasite","hacim","yoğunluk","kütle","genişlik","yükseklik","derinlik","uzunluk","kalınlık","ağırlık","denge","ölçüm","ayar","ayarcı","kontrol","düzenek","araç","ekipman","donanım","işletme","hizmet","bakım","onarım","kalibrasyon","iletim","bağlantı","devre","akım","enerji","batarya","pil","kablo","priz","fiş","adaptör","anahtar","sensör","motor","şanzıman","tank","kombi","radyatör","baca","yükleme","boşaltma","taşıma","nakliye","kargo","ambar","istif","palet","palettepe","forklift","vinç","kulakçık","mandal","koli","poşet","paket","karton","çeşme","musluk","pompa","çark","geçit","giriş","çıkış","kilit","mandal","sürgü","kapı","pencere","cumbalı","pervaz","menteşe","çerçeve","duvar","sıva","boya","fayans","döşeme","tavan","taban","zemin","merdiven","küpeşte","korkuluk","banyo","lavabo","musluk","ayna","çamaşır","deterjan","leke","kova","fırça","süpürge","paspas","kovalık","çöpçü","torba","atık","geri dönüşüm","çevrim","ısıl","ısıtıcı","termostat","sensör","duman","yangın","alarm","tırmık","kürek","tırpan","saban","toprak","çim","çayır","çayırkuşu","çitlembik","sümbül","narcissus","kardelen","menekşe","lale","orkide","yosunluk","damlacık","zerrecik","damıtma","süzme","kaynak","ırmak","nehir","çay","derinlik","yükseklik","ölçek","porsiyon","tabak","kase","kavanoz","kapak","balon","baloncuk","damar","kılcal","temizlik","çamaşırlık","mutfak","fırıncı","yemeklik","tehlike","gözetim","denetçi","kontrol","görev","vardiya","sermaye","yatırım","borsa","piyasa","ihracat","ithalat","katalog","envanter","fişleme","ödeme","havale","dekont","kasa","kârhane","üretim","imalat","serim","montaj","tasnif","sıralama","paketleme","bölme","çözme","aktar","aktarım","iletişim","anten","verici","alıcı","sunucu","kablolama","arpanet","sistemci","tecrübeli","uzman","ustabaşı","yönetici","sekreter","görevlendirme","çizelge","planlama","ajanda","takvim","randevu","başvuru","belgelik","kopyalama","tutamak","kelepçe","dolambaç","kıskanç","fıstık","süzgeç","çorbalık","yontmak","dilenci","safran","balina","üçgenim","yorgan","hazırlık","çelikçi","çekirge","arşivci","sevimsiz","kaygılı","sürpriz","çınlama","gündem","baskıcı","tornacı","duraklı","anahtar","güneyli","duygulu","gürültü","çırpıcı","serinlik","yanardağ","büyüleyici","ütopyacı","dalgın","kıvrak","şüpheli","dindar","kumsal","çatallan","yapraksı","kılavuz","koşullu","yetenek","dökümcü","bütçeli","kısaçık","çeviklik","gülünç","korunak","binicik","çayhane","çobanlık","gizlilik","çöküşlü","beklenti","tutkulu","yapışkan","oyuncak","çakıllı","sembolik","çakılmak","dondurucu","tazelik","bölmeli","yankısız","siyahlık","ceketli","kitaplık","gerçekçi","sakinlik","çözümcü","taşıtlık","çarpışma","boşalmak","mülayim","özenli","çeyizlik","çaycılık","uçurtma","gölgelik","ormanlık","çıtırdı","çözünme","kuyruklu","avlanmak","çatlama","çıkarma","düzenek","gelincik","kıvrımlı","çantacı","çökeltme","yıldızlı","uzaklık","tutarlık","yıpranma","serüven","topluluk","çakırkeyf","şiddetli","ünlüler","çobanateşi","damlacık","kestirme","çizelge","tahminci","süratli","bölünmek","yanlışlık","çırçır","yontucu","çınaraltı","çorbalık","kırıntı","donanım","gösteri","çekicilik","çıtırtı","yabancıl","çalılık","çıngırak","çatırtı","gözetmek","şanslı","telaşlı","şaşkın","yankılı","düşkün","kırmızı","moralim","çalışkan"
+    "masa","çanta","bahçe","araba","kablo","karga","balık","simit","kıyı","kazak","bilet","yıldız","duman","çorap","kalem","saman","tarla","gölge","bıçak","soğan","deniz","orman","tavan","çocuk","gülme","pencere","çimen","aroma","sokak","çukur","kavun","dudak","güven","kültür","hüzün","sandal","gömlek","ceviz","buhur","göbek","kiraz","kadeh","tavuk","koyun","eşlik","kertenkele","fırça","mermi","yumurta","zambak","gökyüzü","maymun","çekiç","tablo","çerçeve","kavanoz","merdiven","anahtar","kaplan","sünger","tencere","kova","tarak","çakmak","kerten","yumruk","paspas","halı","etraf","gemi","görev","defter","kitap","makas","çatal","kaşık","tabak","peçete","zeytin","peynir","köfte","tatlı","börek","çorba","pirinç","mendil","silgi","dosya","kutu","çıta","salça","kabak","şemsiye","aralık","keman","davul","zurna","yorgan","yastık","battaniye","koltuk","sandalye","sehpa","buzluk","fırın","ocak","buhar","çaydanlık","şampuan","sabun","havlu","ayna","dolap","kırlent","nefes","çeyrek","yarım","sayıcı","yolcu","yığın","karşı","çizgi","banka","kredi","cüzdan","gönderi","kargo","arşiv","kalıp","yaprak","çiçek","tohum","balon","nehir","dere","kanyon","ova","çöl","göl","kıyı","rüzgar","yağmur","karanlık","ışıldak","kirpik","eylem","öneri","vergi","kural","yönetim","toplum","halka","pazar","market","mağaza","kasa","fiş","makbuz","kırıntı","çöp","kavanoz","kavanoz","süzgeç","tornavida","kerpeten","çivi","vida","perde","kolye","bilezik","yüzük","küpe","kazma","kürek","saban","çekiç","zımpara","deterjan","yapıştırıcı","mandal","iplik","çember","sarma","zihin","akıl","fikir","düşünce","hayal","umut","sevgi","özlem","korku","öfke","sevinç","merak","sürpriz","şüphe","heyecan","gurur","kıskançlık","saygı","vicdan","talep","yetenek","beceri","alışkanlık","işlem","sistem","düzen","plan","taslak","amaç","hedef","başarı","gelişim","deneme","yanıt","cevap","sahne","perde","oyuncu","seyirci","alkış","tiyatro","sinema","kamera","ekran","projeksiyon","klavye","fare","hoparlör","kulaklık","mikrofon","yazıcı","toner","fişek","proje","kayıt","yazılım","şifre","bilgi","bağlantı","süreç","kulübe","ambar","depo","raf","kutu","torba","kap","şişe","bidon","testi","tabure","zımba","kalemtıraş","çizim","palet","fırça","boya","tuval","çivi","pompa","rende","keşif","yolculuk","tatil","seyahat","otel","bilet","güzergah","durak","istasyon","peron","otobüs","taksi","uçak","gemi","liman","kaptan","şoför","şerit","trafik","kavşak","yaya","köprü","tünel","yol","şerit","asfalt","çukur","set","çizgi","tarife","ücret","fatura","makbuz","toprak","kum","çakıl","çakmaktaşı","çakı","bıçak","makas","testere","kanca","halat","çadır","kapsül","torpil","merhem","sargı","bandaj","çorap","pantolon","kazak","gömlek","ceket","palto","ayakkabı","bot","çizme","kemer","şapka","bere","eldiven","atkı","cüzdan","çantacı","çanta","askı","fermuar","düğme","yaka","ilmek","örgü","iplik","tığ","şiş","örgücü","pasta","çikolata","şeker","lokum","bisküvi","kek","puding","marmelat","reçel","pekmez","helva","tahin","susam","fındık","fıstık","ceviz","badem","kayısı","üzüm","erik","kiraz","vişne","dut","nar","kahve","çaycı","çaydanlık","demlik","fincan","bardak","tabak","tepsi","sürahi","kavanoz","konserve","maden","çelik","alüminyum","plastik","kumaş","deri","kuyruk","kanat","pençe","tırnak","kuyruk","kılçık","kertenkele","bukalemun","serçe","kırlangıç","leylek","karınca","arıcı","sinek","örümcek","kurtçuk","tavşan","tilki","çakal","kurt","ayı","kaplan","aslan","balina","yunus","fok","martı","şahin","doğan","kartal","kömür","çakıl","çakmak","kavanoz","sünger","yastık","battaniye","sazlık","kaygan","sazlık","eğlence","yemek","tarhana","köfteci","çoban","çubuk","düğme","fermuar","sokak","cadde","meydan","kordon","yokuş","vadı","tepki","görevli","yönetici","kaptan","yolculuk","işaret","durum","bilinç","seçenek","koşul","ölçek","kıyas","şekil","örnek","çözüm","bütün","parça","yapı","çatı","duvar","zemin","teras","mermer","tuğla","çimento","harç","kiriş","kolon","rafya","çerçeve","şemsiye","fırtına","gökgürültü","şimşek","yayla","dereye","çamlık","kanyon","kayalık","çölleşme","fidan","oduncu","bahçıvan","bostan","ekili","çayırlık","otlak","meraya","otlama","serpmek","kaynatmak","kavurmak","doğramak","karıştırmak","pişirmek","soğutmak","buzlamak","dilimlemek","yoğurmak","kızartmak","karabiber","kekik","nane","maydanoz","fesleğen","çemen","tarçın","zencefil","zerdeçal","defne","hibrit","aroma","bileşen","karışım","çözünür","durultma","süzme","kıvam","katman","bant","paket","ambar","koli","palet","çeki","dosya","arsiv","katalog","liste","tablo","kılavuz","harita","çizim","tasarım","prototip","model","şablon","pano","çizelge","safha","hamle","denge","doku","ahenk","ritim","tempo","melodi","ezgi","koridor","balkon","otobüs","servis","dolmuş","metro","tramvay","tünel","gişe","biletçi","şoförlük","motorcu","sektör","ticaret","sanayi","piyasa","kâr","zarar","stok","ambar","sevkiyat","irsaliye","üretim","imalat","işçilik","atölye","fabrika","tesis","çalışma","mesai","vardiya","girişim","şirket","kırtasiye","gelir","gider","beyan","kayıt","arşivci","inceleme","rapor","önerge","taslak","onay","ret","ölçüm","kontrol","dönüş","akış","sistem","kulüp","dernek","vakıf","toplantı","kongre","seminer","etkinlik","festival","gösteri","yürüyüş","kortej","ziyaret","tören","karşılama","çıkış","giriş","kabul","çanta","yolculuk","rota","sefer","liman","iskele","kaptan","tayfa","güverte","gemi","yüzen","batık","sal","yelken","kürek","sınır","kontrol","nöbet","devriye","karakol","birim","ekip","merkez","acil","ambulans","hasta","tedavi","yatak","serum","ilaç","reçete","bandaj","pansuman","ateş","nabız","solunum","klinik","poliklinik","röntgen","film","grafik","çizgi","ölçü","hesap","toplama","çıkarma","çarpma","bölme","işlem","katsayı","oran","orantı","dizi","kural","tanım","örn","bilgi","liste","alan","hacim","değer","miktar","boyut","paket","küme","doku","lif","kütle","yoğunluk","buhar","duman","yakıt","motor","şanzıman","janta","lastik","rot","salıncak","far","sinyal","ayna","tırnak","kıymık","zar","kıkırdak","doku","kas","sinir","bağ","damar","hücre","doktor","hemşire","eczane","ölçek","kıvam","uygulama","donanım","yazılım","arayüz","sürüm","haber","gündem","gazete","dergi","manşet","yazar","yorum","kanal","anten","radyo","mikser","kamera","tripod","ışık","stüdyo","merkez","acil","ambulans","hasta","tedavi","yatak","serum","ilaç","reçete","bandaj","pansuman","ateş","nabız","solunum","klinik","poliklinik","röntgen","film","grafik","çizgi","ölçü","hesap","toplama","çıkarma","çarpma","bölme","işlem","katsayı","oran","orantı","dizi","kural","tanım","örn","bilgi","liste","alan","hacim","değer","miktar","boyut","paket","küme","doku","lif","kütle","yoğunluk","buhar","duman","yakıt","motor","şanzıman","janta","lastik","rot","salıncak","far","sinyal","ayna","tırnak","kıymık","zar","kıkırdak","doku","kas","sinir","bağ","damar","hücre","doktor","hemşire","eczane","ölçek","kıvam","uygulama","donanım","yazılım","arayüz","sürüm","haber","gündem","gazete","dergi","manşet","yazar","yorum","kanal","anten","radyo","mikser","kamera","tripod","ışık","stüdyo","merkez","büro","düzen","takım","çember","bilek","dirsek","omuz","kalça","sinema","salonu","bilet","gişe","perde","koltuk","yorumcu","izleyici","şarkı","müzik","nota","ton","kayıt","albüm","opera","bale","tiyatro","oyun","prova","sahne","perde","dekor","aksesuar","avize","kutuplaşma","denge","korkuluk","mezarlık","lahit","kabir","ziyaretçi","çelenk","çiçekçi","baharatçı","nakliye","uçuş","kaptan","denetçi","kontrolör","kılavuz","haritalama","yönlendirme","panel","sayaç","gösterge","kumanda","tuş","kutu","makara","yay","makine","tasma","kayış","çark","verici","alıcı","anten","hoparlör","kulaklık","amfi","modem","yazıcı","tarayıcı","sunucu","veritabanı","sorgu","döngü","depolama","ortam","çözücü","kaynak","çevrim","parola","kimlik","oturum","ayar","kiralık","araç","ekipman","parça","tasarruf","birikim","katalog","gönderi","posta","zarf","pul","paket","kolye","bilezik","madalya","anahtarlık","kutu","sepet","şişe","metal","kalıp","kanca","kablo","fiş","priz","adaptör","üstlük","pantolon","etek","gömlek","çorap","ayakkabı","terlik","çizme","palto","pijama","gecelik","eşofman","yedek","çelik","kanıt","bulgu","notlar","yönerge","ısınma","soğuma","kaynama","durgun","çalkantı","yanardağ","atmosfer","güneşlik","zamanlama","program","rehber","defter","mühür","kalemlik","zımba","geçiş","izleme","arka","çiftlik","ahır","çoban","çobanlık","ördek","kaz","horoz","barınak","kulübe","tasma","yemlik","suluk","çim biçme","toplama","serpiştirme","armağan","miras","paylaşım","balçık","çamur","kayık","sahil","kıyafet","çevre","doğal","ormanlık","kayın","meşe","çınar","dutluk","çardak","çardakçı","fidanlık","bahçeci","seracı","fidancı","sulama","damlama","yağmurlama","hortum","musluk","pimaş","künk","kuyu","pompa","jeneratör","havaalanı","kalkış","iniş","görevli","kontuar","bavul","çantacı","pasaport","kimlik","ruhsat","numara","kuşluk","akşamüstü","şafak","tanyeri","günbatımı","günorta","alaca","karanlık","ay ışığı","gölcük","yaygın","zenginlik","fakirlik","cesaret","kararlılık","sabırlı","uyumlu","dürüst","nazik","kibar","sakin","hırslı","çalışkan","tembel","dalgın","unutkan","cesur","ürkek","telaşlı","şaşkın","baharat","bulyon","şekerlik","tuzluk","kapak","kaplama","tencere","kalbur","öğütücü","aktarlık","kuyumcu","manav","bakkal","şarküteri","fırıncı","pazarcı","tezgâhtar","kasiyer","müdürlük","yönetmelik","duyuru","işlemci","bellek","disk","kayıtçı","arşivleme","sürücü","çalıştırıcı","denetleme","sunum","belge","çözümleme","grafikçi","tasarımcı","yazılımcı","mimar","tekniker","usta","çırak","ambarcı","depo","rafçı","stokçu","kırılması","onarma","tamirat","tesisat","doğalgaz","boru","vana","bağlantı","sızdırma","yalıtım","kaplama","çatıcılık","boyahane","işçilik","üretken","verimli","eksiksiz","tamamlanmış","hazırlık","kontrolcü","izleme","değerlendirme","fişleme","dosyalama","klasör","evrak","for","form","raporlama","döküm","çözüm","içerik","paylaşım","görsel","şablon","dizgi","pencere","ayarlar","bileşen","modül","yenilik","geliştirme","test","deneme","tasarım","çizimci","maket","heykel","galeri","sergi","atölye","çıraklık","usta","çırpıcı","karıştırıcı","karıştırma","süzgeç","tava","tencere","sap","gövde","kaplama","çelikçi","metalci","kalay","bakır","pirinç","demirci","dökümcü","çarkçı","kaynakçı","kılavuzluk","yönlendirme","işaretçi","ölçer","metre","kumpas","çıpa","halat","bağlantı","kasnak","vida","cıvata","somun","pense","kargaburun","kerpeten","tornavida","rende","rendeleme","kazıyıcı","çakı","testere","jig","ayarlı","çarklı","kaplama","maskeleme","boyama","baskı","kopya","tarama","uygulama","kayıt","akış","şablon","modelci","mizanpaj","renkli","renksiz","yoğun","hafif","berrak","bulanık","katı","sıvı","gaz","erime","donma","buharlaşma","çözünme","birleşim","tepkime","ısıtma","soğutma","öğütme","kaynatma","pişirme","kızartma","haşlama","fermente","mayalama","katkı","kemik","iskelet","doku","bağ","kıkırdak","bilek","göğüs","omurga","kaburga","çene","kulak","burun","gözlük","mercek","çerçeve","kulplu","saplama","çatlak","yarık","çukur","gözlem","inceleme","analiz","yorumlama","tartışma","toplantı","oturum","panel","konferans","seminer","atölye","çalıştay","fikir","öneri","tasarı","plan","proje","takvim","program","günlük","çizelge","liste","madde","özet","notlar","gelişme","duyuru","bildirim","kayıt","dosya","fihrist","arşiv","kapasite","hacim","yoğunluk","kütle","genişlik","yükseklik","derinlik","uzunluk","kalınlık","ağırlık","denge","ölçüm","ayar","ayarcı","kontrol","düzenek","araç","ekipman","donanım","işletme","hizmet","bakım","onarım","kalibrasyon","iletim","bağlantı","devre","akım","enerji","batarya","pil","kablo","priz","fiş","adaptör","anahtar","sensör","motor","şanzıman","tank","kombi","radyatör","baca","yükleme","boşaltma","taşıma","nakliye","kargo","ambar","istif","palet","palettepe","forklift","vinç","kulakçık","mandal","koli","poşet","paket","karton","çeşme","musluk","pompa","çark","geçit","giriş","çıkış","kilit","mandal","sürgü","kapı","pencere","cumbalı","pervaz","menteşe","çerçeve","duvar","sıva","boya","fayans","döşeme","tavan","taban","zemin","merdiven","küpeşte","korkuluk","banyo","lavabo","musluk","ayna","çamaşır","deterjan","leke","kova","fırça","süpürge","paspas","kovalık","çöpçü","torba","atık","geri dönüşüm","çevrim","ısıl","ısıtıcı","termostat","sensör","duman","yangın","alarm","tırmık","kürek","tırpan","saban","toprak","çim","çayır","çayırkuşu","çitlembik","sümbül","narcissus","kardelen","menekşe","lale","orkide","yosunluk","damlacık","zerrecik","damıtma","süzme","kaynak","ırmak","nehir","çay","derinlik","yükseklik","ölçek","porsiyon","tabak","kase","kavanoz","kapak","balon","baloncuk","damar","kılcal","temizlik","çamaşırlık","mutfak","fırıncı","yemeklik","tehlike","gözetim","denetçi","kontrol","görev","vardiya","sermaye","yatırım","borsa","piyasa","ihracat","ithalat","katalog","envanter","fişleme","ödeme","havale","dekont","kasa","kârhane","üretim","imalat","serim","montaj","tasnif","sıralama","paketleme","bölme","çözme","aktar","aktarım","iletişim","anten","verici","alıcı","sunucu","kablolama","arpanet","sistemci","tecrübeli","uzman","ustabaşı","yönetici","sekreter","görevlendirme","çizelge","planlama","ajanda","takvim","randevu","başvuru","belgelik","kopyalama","tutamak","kelepçe","dolambaç","kıskanç","fıstık","süzgeç","çorbalık","yontmak","dilenci","safran","balina","üçgenim","yorgan","hazırlık","çelikçi","çekirge","arşivci","sevimsiz","kaygılı","sürpriz","çınlama","gündem","baskıcı","tornacı","duraklı","anahtar","güneyli","duygulu","gürültü","çırpıcı","serinlik","yanardağ","büyüleyici","ütopyacı","dalgın","kıvrak","şüpheli","dindar","kumsal","çatallan","yapraksı","kılavuz","koşullu","yetenek","dökümcü","bütçeli","kısaçık","çeviklik","gülünç","korunak","binicik","çayhane","çobanlık","gizlilik","çöküşlü","beklenti","tutkulu","yapışkan","oyuncak","çakıllı","sembolik","çakılmak","dondurucu","tazelik","bölmeli","yankısız","siyahlık","ceketli","kitaplık","gerçekçi","sakinlik","çözümcü","taşıtlık","çarpışma","boşalmak","mülayim","özenli","çeyizlik","çaycılık","uçurtma","gölgelik","ormanlık","çıtırdı","çözünme","kuyruklu","avlanmak","çatlama","çıkarma","düzenek","gelincik","kıvrımlı","çantacı","çökeltme","yıldızlı","uzaklık","tutarlık","yıpranma","serüven","topluluk","çakırkeyf","şiddetli","ünlüler","çobanateşi","damlacık","kestirme","çizelge","tahminci","süratli","bölünmek","yanlışlık","çırçır","yontucu","çınaraltı","çorbalık","kırıntı","donanım","gösteri","çekicilik","çıtırtı","yabancıl","çalılık","çıngırak","çatırtı","gözetmek","şanslı","telaşlı","şaşkın","yankılı","düşkün","kırmızı","moralim","çalışkan"
 ];
 
 // --- SESLER (Sentetik) ---
@@ -568,7 +571,7 @@ let state = {
     spawnTimer: 0,
     isPausedForLevel: false, 
     levelTransition: null,
-    bombWord: null, // YENİ: Patlayıcı kelime referansı
+    bombWord: null, 
     settings: {
         skipWait: false, 
     }
@@ -637,8 +640,9 @@ class Word {
         this.speed = (1.5 + (state.level * 0.15)) / 2; 
         this.hitEffect = new Array(this.text.length).fill(0);
         this.initialX = this.x;
-        this.isBomb = false; // YENİ: Bomb kelimesi bayrağı
-        this.score = 10 * state.level; // Kelime taban puanı
+        this.isBomb = false; 
+        // Düzeltme 2: Kelime uzunluğuna göre puanlama
+        this.score = this.text.length * BASE_POINTS_PER_LETTER; 
     }
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
@@ -647,6 +651,7 @@ class Word {
             const baseSpeed = 0.8 + (state.level * 0.05); 
             this.y += baseSpeed * dt * state.timeScale * errorMultiplier; 
         }
+        // Hit efekti süresi azaltıldı
         for(let i=0; i<this.hitEffect.length; i++) {
             if(this.hitEffect[i] > 0) {
                 this.hitEffect[i] -= 1 * state.timeScale;
@@ -684,19 +689,23 @@ class Word {
                  ctx.shadowBlur = 0;
             }
             
+            // Düzeltme 3: Harf rengini hitEffect ve index'e göre belirle
             if (i < this.index) {
+                // Harf yazılmış (Lazer isabet etmiş)
                 ctx.fillStyle = "#ff0055"; 
                 ctx.shadowColor = "#ff0055"; 
-                ctx.shadowBlur = Math.max(15, this.isBomb ? 15 : 0);
+                ctx.shadowBlur = Math.max(10, this.isBomb ? 10 : 0);
             } else if (this.hitEffect[i] > 0) {
-                // 🔴 Lazer vuruşu Kırmızı Neon
+                // Harf lazer tarafından vuruldu (Kırmızı Neon Flash)
                 ctx.fillStyle = "var(--neon-red)"; 
                 ctx.shadowColor = "var(--neon-red)"; 
-                ctx.shadowBlur = 30 * (this.hitEffect[i] / 10); // Daha belirgin parlama
+                ctx.shadowBlur = 35 * (this.hitEffect[i] / 10); // Daha belirgin parlama
             } else {
+                // Harf henüz yazılmamış ve vurulmamış (Beyaz)
                 ctx.fillStyle = "#ffffff";
-                ctx.shadowBlur = this.isBomb ? 15 : 0; // Bomb kelimesinin gölgesi kalsın
+                ctx.shadowBlur = this.isBomb ? 10 : 0; // Bomb kelimesinin gölgesi kalsın
             }
+            
             ctx.fillText(char, currentX, this.y);
             currentX += charW;
             ctx.shadowBlur = 0; 
@@ -711,7 +720,7 @@ class Laser {
         this.targetWord = targetWord; 
         this.targetIndex = targetIndex; 
         
-        this.speed = 1000; // pikseller/saniye cinsinden hız
+        this.speed = 1200; // pikseller/saniye cinsinden hız (biraz hızlandırdım)
         
         const dx = targetX - startX;
         const dy = targetY - startY;
@@ -728,8 +737,15 @@ class Laser {
         this.traveled += moveDist;
         
         if (this.traveled >= this.dist) {
-            // HEDEF VURULDU!
+            // HEDEF VURULDU! - Düzeltme 3: Harf tam burada kırmızıya döner
             this.targetWord.hitEffect[this.targetIndex] = 10; 
+            this.targetWord.index++; // Harfi yazılmış olarak işaretle
+            playSound('hit'); 
+            
+            // Kelime tamamlama kontrolü (Artık burada)
+            if (this.targetWord.index >= this.targetWord.text.length) {
+                completeWord(this.targetWord);
+            }
             return true; // Lazeri yok et
         }
         
@@ -739,8 +755,8 @@ class Laser {
         return false;
     }
     draw() {
-        // Lazer kuyruğu (daha uzun)
-        const trailLength = 15; // Kuyruk uzunluğu
+        // Lazer kuyruğu 
+        const trailLength = 15; 
         ctx.beginPath();
         ctx.moveTo(this.x, this.y);
         ctx.lineTo(this.x - this.nx * trailLength, this.y - this.ny * trailLength);
@@ -906,15 +922,50 @@ function spawnWord() {
     state.activeWords.push(new Word(candidate));
 }
 
+function completeWord(target) {
+    const wordCenterX = target.x + target.width / 2;
+    const wordCenterY = target.y + 15;
+    
+    if (target.isBomb) {
+        triggerBomb(target);
+    } else {
+        // Düzeltme 2: Kelime uzunluğunu ve seviyeyi puana dahil et.
+        const errorMultiplier = getErrorMultiplier();
+        state.score += target.score * state.level * errorMultiplier; 
+        state.wordsCompleted++;
+        playSound('complete');
+        
+        // 🍚 GELİŞTİRİLMİŞ KUM EFEKTİ (Sand Particles)
+        for(let i=0; i<150; i++) { // Daha yoğun ve fazla kum
+            state.particles.push(new Particle(
+                wordCenterX + (Math.random() - 0.5) * 30, 
+                wordCenterY + (Math.random() * 10), 
+                '#ffffff', 
+                'sand'
+            ));
+        }
+        
+        state.activeWords = state.activeWords.filter(w => w !== target);
+        if (state.wordsCompleted >= state.wordsTarget) nextLevel();
+    }
+    
+    if(state.bombWord === target) state.bombWord = null; 
+    updateHUD();
+}
+
 function triggerBomb(bombWord) {
     playSound('explosion');
 
+    const errorMultiplier = getErrorMultiplier();
+    
     const totalScoreFromWords = state.activeWords
-        .filter(w => w !== bombWord) // Bomb word'ü dahil etme, puanı zaten alındı
-        .reduce((sum, w) => sum + (w.score * getErrorMultiplier()), 0);
+        .filter(w => w !== bombWord)
+        .reduce((sum, w) => sum + (w.score * state.level * errorMultiplier), 0); // Düzeltme 2: Seviye çarpanı eklendi
         
+    // Bomb kelimesinin puanını da ekle (Lazer vuruşu ile index artırıldığı için bu kelime de sayılır)
+    state.score += bombWord.score * state.level * errorMultiplier; 
     state.score += totalScoreFromWords;
-    state.wordsCompleted += state.activeWords.length; // Patlayan tüm kelimeleri say
+    state.wordsCompleted += state.activeWords.length; 
 
     // Patlama parçacıkları
     const bombCenterX = bombWord.x + bombWord.width / 2;
@@ -925,9 +976,7 @@ function triggerBomb(bombWord) {
     state.activeWords = [];
     state.bombWord = null;
 
-    // Hedefe ulaşıldıysa level atla
     if (state.wordsCompleted >= state.wordsTarget) nextLevel();
-    updateHUD();
 }
 
 
@@ -1038,63 +1087,51 @@ document.addEventListener('keydown', (e) => {
     if (!state.active || state.gameOver || state.isPausedForLevel && !state.settings.skipWait) return;
     const key = e.key.toLowerCase();
     
+    // Düzeltme 1: Tüm uygun hedefleri bul
     const targets = state.activeWords.filter(w => w.text[w.index] === key);
+    let target = null;
 
     if (targets.length > 0) {
-        // İstenen Düzeltme: En üstteki (en küçük y koordinatına sahip) kelimeyi hedefle
-        targets.sort((a, b) => a.y - b.y);
-        const target = targets[0];
-        const currentHitIndex = target.index; 
-        
-        ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
-        let precedingText = target.text.substring(0, currentHitIndex);
-        const precedingWidth = ctx.measureText(precedingText).width;
-        const charWidth = ctx.measureText(e.key).width;
-        
-        const startX = w / 2;
-        const startY = h - 100;
-        const targetX = target.x + precedingWidth + charWidth / 2;
-        const targetY = target.y + 15; 
+        // 1. Yazılmaya BAŞLANMIŞ kelimeleri kontrol et (index > 0)
+        let targetCandidates = targets.filter(w => w.index > 0);
 
-        // 🔴 LAZER ATEŞLEME
-        state.lasers.push(new Laser(startX, startY, targetX, targetY, target, currentHitIndex));
-
-        target.index++;
-        playSound('hit');
-        
-        if (target.index >= target.text.length) {
-            const wordCenterX = target.x + target.width / 2;
-            const wordCenterY = target.y + 15;
-            
-            // 💣 BOMB KELİMESİ KONTROLÜ
-            if (target.isBomb) {
-                triggerBomb(target);
-            } else {
-                // NORMAL KELİME TAMAMLANMASI
-                const errorMultiplier = getErrorMultiplier();
-                state.score += target.score * errorMultiplier; // Word skorunu kullan
-                state.wordsCompleted++;
-                playSound('complete');
-                
-                // 🍚 GELİŞTİRİLMİŞ KUM EFEKTİ (Sand Particles)
-                for(let i=0; i<150; i++) { // Daha yoğun ve fazla kum
-                    state.particles.push(new Particle(
-                        wordCenterX + (Math.random() - 0.5) * 30, 
-                        wordCenterY + (Math.random() * 10), 
-                        '#ffffff', 
-                        'sand'
-                    ));
-                }
-                
-                state.activeWords = state.activeWords.filter(w => w !== target);
-                if (state.wordsCompleted >= state.wordsTarget) nextLevel();
+        if (targetCandidates.length > 0) {
+            // Yazılmaya başlanmış kelimeler arasında en üsttekini (en düşük Y) seç
+            targetCandidates.sort((a, b) => a.y - b.y);
+            target = targetCandidates[0];
+        } else {
+            // 2. Yeni kelimeleri kontrol et (index === 0)
+            targetCandidates = targets.filter(w => w.index === 0);
+            if (targetCandidates.length > 0) {
+                // Yeni kelimeler arasında en üsttekini (en düşük Y) seç
+                targetCandidates.sort((a, b) => a.y - b.y);
+                target = targetCandidates[0];
             }
-            
-            // Eğer patlayıcı kelime yazıldıysa, bir sonraki kelime birincil önceliği alır.
-            if(state.bombWord === target) state.bombWord = null; 
+            // Aksi takdirde (eğer targets.length > 0 iken buraya düşerse) hata var, ama yukarıdaki filtreler nedeniyle düşmemeli.
         }
-        updateHUD();
+        
+        // --- BAŞARILI VURUŞ ---
+        if (target) {
+            
+            const currentHitIndex = target.index; 
+            
+            ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
+            let precedingText = target.text.substring(0, currentHitIndex);
+            const precedingWidth = ctx.measureText(precedingText).width;
+            const charWidth = ctx.measureText(key).width;
+            
+            const startX = w / 2;
+            const startY = h - 100;
+            const targetX = target.x + precedingWidth + charWidth / 2;
+            const targetY = target.y + 15; 
+
+            // 🔴 LAZER ATEŞLEME (Index artırımı Laser.update içinde yapılacak)
+            state.lasers.push(new Laser(startX, startY, targetX, targetY, target, currentHitIndex));
+            
+        } 
+        
     } else {
+        // --- HATA VURUŞU (Hiçbir kelime bu harf ile ilerletilemez) ---
         state.errors++; 
         playSound('error');
         updateHUD();
