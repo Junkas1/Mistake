@@ -196,7 +196,7 @@
             opacity: 1; 
         }
 
-        /* ✅ Düzeltilmiş: İsim Girişi Kutusu Stili ve Boşlukları */
+        /* İsim Girişi Kutusu Stili */
         #player-nick {
             margin: 25px auto; 
             padding: 10px 15px;
@@ -233,7 +233,8 @@
             color: var(--neon-blue);
             cursor: pointer;
             z-index: 15;
-            text-shadow: 0 0 10px var(--neon-blue);
+            /* ✅ DEĞİŞİKLİK: text-shadow kaldırıldı */
+            text-shadow: none; 
             transition: transform 0.3s;
             pointer-events: auto;
         }
@@ -590,7 +591,6 @@ class Word {
         this.width = ctx.measureText(text).width;
         this.x = Math.random() * (w - this.width - 100) + 50;
         this.y = -50; 
-        // ✅ DEĞİŞİKLİK: Düşme hızı mevcut hızın yarısı kadar yavaşlatıldı.
         this.speed = (1.5 + (state.level * 0.15)) / 2; 
         this.hitEffect = new Array(this.text.length).fill(0);
         this.initialX = this.x; 
