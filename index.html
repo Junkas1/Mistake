@@ -236,17 +236,21 @@
             cursor: pointer;
             transition: transform 0.5s, color 0.3s; 
             pointer-events: auto;
+            /* ✅ YENİ DÜZENLEME: Sadece mavi neon gölge (dişli için) */
             text-shadow: 0 0 10px var(--neon-blue);
+            /* Siyah kutucuğu gösteren arka plan kutu gölgesi (box-shadow) kaldırıldı */
+            box-shadow: none; 
         }
         
         #settings-button:hover {
             transform: rotate(360deg); /* 1 tam tur */
             color: var(--neon-blue);
+            /* ✅ YENİ DÜZENLEME: Üzerine gelindiğinde oluşan beyaz aydınlatma kaldırıldı */
+            text-shadow: 0 0 15px var(--neon-blue); 
         }
         
         #settings-panel {
             position: fixed;
-            /* ✅ DÜZENLEME: 80px yukarı kaydırıldı */
             bottom: 80px; 
             left: 20px;
             width: 300px;
@@ -281,7 +285,6 @@
         }
         
         #settings-panel > .setting-item {
-            /* Ses seviyesini ayarlama çubuğu altındaki boşluk */
             margin-top: 15px; 
         }
 
@@ -293,7 +296,6 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 5px;
-            /* ✅ DÜZENLEME: Daha fazla boşluk için 20px yapıldı. */
             margin-bottom: 20px; 
         }
         
@@ -404,7 +406,7 @@
     </div>
 
     <div class="setting-item">
-        <label for="skip-wait">BÖLÜM BEKLEMESİNİ KAPAT</label>
+        <label for="skip-wait">BÖLÜM GEÇİŞLERİNİ KAPAT</label>
         <input type="checkbox" id="skip-wait">
     </div>
 </div>
