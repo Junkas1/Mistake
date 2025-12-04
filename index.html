@@ -232,43 +232,57 @@
             color: #fff;
             font-size: 30px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.5s; /* Animasyon hızı */
             pointer-events: auto;
             text-shadow: 0 0 10px var(--neon-blue);
+            /* Başlangıçtaki transform: rotate(60deg) kaldırıldı. */
         }
-
+        /* ✅ YENİ ÇARK ÜZERİNE GELİNCE DÖNME ANİMASYONU */
         #settings-button:hover {
-            transform: rotate(60deg) scale(1.1);
+            transform: rotate(360deg); /* 1 tam tur */
             color: var(--neon-blue);
         }
         
         #settings-panel {
             position: fixed;
-            bottom: 80px;
+            bottom: 20px;
             left: 20px;
             width: 300px;
             padding: 15px;
             background: rgba(0, 0, 0, 0.85);
             border: 2px solid var(--neon-blue);
             border-radius: 8px;
-            transform: translateX(-150%); /* Başlangıçta sol dışarıda */
-            transition: transform 0.4s ease-out;
-            pointer-events: auto;
+            transform-origin: 0% 100%; /* Sol alt köşe */
+            
+            /* Başlangıçta görünmez/küçük ve dönük */
+            transform: scale(0) rotate(45deg); 
+            opacity: 0;
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+            
+            pointer-events: none; /* Açılana kadar tıklanamaz */
             z-index: 14;
         }
         
+        /* ✅ YENİ AÇILIŞ ANİMASYONU */
         #settings-panel.open {
-            transform: translateX(0);
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .setting-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            /* margin-bottom: 10px; yerine padding ve margin ayrımı */
             padding-bottom: 5px;
             border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
             font-size: 14px;
+        }
+        
+        /* ✅ DÜZENLEME: İtemler arasına daha fazla boşluk */
+        #settings-panel > .setting-item {
+            margin-top: 15px; /* Ayarlar arasında boşluk */
         }
 
         /* Ses Çubuğu Stilleri */
@@ -284,6 +298,7 @@
         
         #volume-range {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             height: 8px;
             background: transparent;
@@ -388,7 +403,7 @@
     </div>
 
     <div class="setting-item">
-        <label for="skip-wait">BÖLÜM BEKLEMESİNİ KAPA</label>
+        <label for="skip-wait">BÖLÜM BEKLEMESİNİ KAPAT</label>
         <input type="checkbox" id="skip-wait">
     </div>
 </div>
@@ -446,6 +461,9 @@ function updateVolume() {
 
 // Sesleri oynatırken masterGain kullan
 function playSound(type) {
+    // Ses seviyesi 0 ise oynatma
+    if (masterGain.gain.value === 0) return;
+    
     if(audioCtx.state === 'suspended') audioCtx.resume();
     
     const osc = audioCtx.createOscillator();
@@ -516,8 +534,8 @@ let state = {
     timeScale: 1.0,
     lastTime: 0,
     spawnTimer: 0,
-    isPausedForLevel: false, // ✅ YENİ: Bölüm geçişi için duraklama
-    levelTransition: null,   // ✅ YENİ: Bölüm geçiş efekti nesnesi
+    isPausedForLevel: false, // Bölüm geçişi için duraklama
+    levelTransition: null,   // Bölüm geçiş efekti nesnesi
     settings: {
         skipWait: false, // Bölüm beklemesini kapat ayarı
     }
@@ -536,31 +554,32 @@ function getErrorMultiplier() {
 
 // --- YENİ SINIFLAR ---
 
-// ✅ Bölüm Geçişi Animasyonu Yöneticisi
+// Bölüm Geçişi Animasyonu Yöneticisi
 class LevelTransition {
     constructor(level) {
         this.text = `BÖLÜM ${level}`;
-        this.life = 0; // 0'dan 100'e (2 saniye = ~120 tick)
-        this.duration = 120; 
+        this.life = 0; 
+        this.duration = 120; // ~2 saniye
     }
 
     update(dt) {
         if (this.life < this.duration) {
-            this.life += dt * 3; // Hızlandırılmış artış
+            this.life += dt * 3; 
             return false;
         }
-        return true; // Bitti
+        return true; 
     }
 
     draw() {
-        const progress = this.life / this.duration;
+        const progress = Math.min(1, this.life / this.duration);
         let alpha = 0;
 
-        if (progress < 0.25) { // Görünme (0 -> 1)
+        // 0-25% Görünme, 25-75% Sabit, 75-100% Kaybolma
+        if (progress < 0.25) { 
             alpha = progress * 4;
-        } else if (progress < 0.75) { // Sabit Kalma
+        } else if (progress < 0.75) { 
             alpha = 1;
-        } else { // Kaybolma (1 -> 0)
+        } else { 
             alpha = 1 - ((progress - 0.75) * 4);
         }
 
@@ -769,6 +788,7 @@ function initGame() {
     document.getElementById('go-content').classList.remove('visible');
     document.getElementById('hud').style.display = 'flex';
     document.getElementById('settings-button').style.display = 'none'; // Oyunda ayar butonunu gizle
+    settingsPanel.classList.remove('open'); // Ayarlar menüsünü kapat
     
     document.getElementById('btn-save').disabled = false;
     document.getElementById('btn-save').innerText = "KAYDET";
@@ -884,7 +904,7 @@ function loop(timestamp) {
         if (p.life <= 0) state.particles.splice(i, 1);
     }
 
-    // ✅ BÖLÜM GEÇİŞ EFEKTİ ÇİZİMİ
+    // BÖLÜM GEÇİŞ EFEKTİ ÇİZİMİ
     if (state.levelTransition) {
         const finished = state.levelTransition.update(dt);
         state.levelTransition.draw();
@@ -959,11 +979,6 @@ const skipWaitCheckbox = document.getElementById('skip-wait');
 // Ayarlar panelini aç/kapat
 settingsButton.addEventListener('click', () => {
     settingsPanel.classList.toggle('open');
-    if (settingsPanel.classList.contains('open')) {
-        settingsButton.style.color = 'var(--neon-pink)';
-    } else {
-        settingsButton.style.color = '#fff';
-    }
 });
 
 // Checkbox durumu değiştiğinde state'i ve localStorage'ı güncelle
