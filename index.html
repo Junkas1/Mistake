@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MISTAKE - RELOADED</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght=900&display=swap');
         
         :root {
             --neon-pink: #ff0055;
@@ -25,7 +25,6 @@
             height: 100vh;
         }
 
-        /* Canvas tüm ekranı kaplar ve en alt katmandadır */
         canvas { 
             position: fixed; top: 0; left: 0; 
             z-index: 1; 
@@ -57,7 +56,6 @@
             align-items: center; 
         }
 
-        /* MISTAKE ve BAŞLAT Butonunu Tam Ortalamak için Container */
         .center-content {
             position: absolute;
             left: 50%;
@@ -69,16 +67,13 @@
             pointer-events: auto;
         }
         
-        /* Sıralama panelini sol ortaya sabitle */
         .right-panel {
             position: absolute;
             top: 50%;
             left: 10%; 
             transform: translateY(-50%);
-            
             width: 300px;
             max-height: 400px; 
-            
             background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column;
             padding: 20px 15px; 
@@ -86,8 +81,6 @@
             pointer-events: auto;
         }
         
-        .left-panel { display: none; }
-
         h1 {
             font-size: clamp(60px, 8vw, 120px);
             background: linear-gradient(to bottom, #fff, var(--neon-pink));
@@ -115,22 +108,10 @@
             border-radius: 5px;
         }
 
-        button:hover {
-            background: #fff;
-            color: #000;
-            box-shadow: 0 0 30px #fff;
-            transform: scale(1.05);
-        }
-
         button.primary {
             border-color: var(--neon-pink);
             color: var(--neon-pink);
             box-shadow: 0 0 15px var(--neon-pink);
-        }
-        button.primary:hover {
-            background: var(--neon-pink);
-            color: #000;
-            box-shadow: 0 0 50px var(--neon-pink);
         }
 
         /* --- HUD (Oyun İçi Arayüz) --- */
@@ -138,29 +119,25 @@
             position: fixed; 
             top: 20px;
             right: 20px; 
-            /* ✅ DÜZENLEME: Eski (dikey) haline döndürüldü */
             display: flex; 
             flex-direction: column; 
             align-items: flex-end;
             z-index: 100;
             font-size: 16px;
-            display: none; /* Varsayılan olarak gizli */
+            display: none; 
             pointer-events: none;
         }
 
         .hud-box {
             background: rgba(0, 0, 0, 0.7);
             padding: 10px 15px;
-            margin-bottom: 8px; /* Dikey boşluk */
+            margin-bottom: 8px; 
             border-right: 2px solid var(--neon-blue);
             border-top: 1px solid rgba(0,243,255,0.2);
             border-bottom: 1px solid rgba(0,243,255,0.2);
             box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
             text-transform: uppercase;
         }
-        
-        .error-count { color: var(--neon-red); }
-        .multiplier { color: var(--neon-pink); }
         
         /* --- OYUN SONU EKRANI (Game Over) --- */
         #game-over-screen {
@@ -170,7 +147,6 @@
         }
         
         .go-content {
-            /* ✅ DÜZENLEME: Oyun sonu ekranı eski (merkezi dikey) haline döndürüldü */
             background: rgba(0, 0, 0, 0.95);
             padding: 40px 60px;
             border: 3px solid var(--neon-pink);
@@ -203,44 +179,7 @@
             margin-top: 10px;
         }
 
-        /* --- SIRALAMA TABLOSU --- */
-        #leaderboard-box {
-            max-height: 340px; 
-            overflow-y: hidden; 
-            border: 1px solid var(--neon-blue);
-            background: rgba(0, 243, 255, 0.05);
-            padding: 5px 10px; 
-            border-radius: 8px;
-            font-size: 13px; 
-        }
-
-        .lb-header {
-            color: var(--neon-blue);
-            font-size: 18px; 
-            text-align: center; 
-            margin-bottom: 10px;
-            text-shadow: 0 0 8px var(--neon-blue);
-            border-bottom: 1px solid rgba(0,243,255,0.3);
-            padding-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        .lb-grid-header, .lb-row {
-            display: grid;
-            grid-template-columns: 30px 1fr 60px 40px 40px; 
-            padding: 5px 0;
-            font-size: 12px;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .lb-rank { color: var(--neon-pink); font-weight: bold; }
-        .lb-nick { color: #ddd; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .lb-score { color: var(--neon-blue); text-align: right; font-weight: bold; }
-        .lb-errors { color: var(--neon-red); text-align: center; }
-        .lb-level { color: #00f3ff; text-align: center; }
-
-
-        /* --- AYARLAR BUTONU --- */
+        /* --- AYARLAR BUTONU VE PENCERESİ --- */
         #settings-button {
             position: fixed;
             bottom: 20px;
@@ -260,12 +199,6 @@
             box-shadow: none; 
         }
         
-        #settings-button:hover {
-            transform: rotate(360deg);
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px var(--neon-blue); 
-        }
-        
         #settings-panel {
             position: fixed;
             bottom: 80px; 
@@ -276,11 +209,9 @@
             border: 2px solid var(--neon-blue);
             border-radius: 8px;
             transform-origin: 0% 100%;
-            
             transform: scale(0) rotate(45deg); 
             opacity: 0;
             transition: transform 0.4s ease-out, opacity 0.4s ease-out;
-            
             pointer-events: none; 
             z-index: 14;
         }
@@ -301,29 +232,18 @@
         }
         
         #settings-panel > .setting-item { margin-top: 15px; }
-        #volume-range { 
+
+        /* Ses Çubukları Stilleri */
+        .setting-item > div { width: 100%; margin: 5px 0; }
+        .setting-item input[type="range"] {
             -webkit-appearance: none; appearance: none; width: 100%; height: 8px; 
-            background: transparent; margin: 0; cursor: pointer;
+            background: rgba(255, 255, 255, 0.1); margin: 0; cursor: pointer; border-radius: 4px;
         }
-        #volume-range::-webkit-slider-thumb {
+        .setting-item input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; appearance: none; width: 15px; height: 15px;
             border-radius: 50%; background: var(--neon-blue); cursor: pointer;
             box-shadow: 0 0 10px var(--neon-blue);
         }
-        .setting-item input[type="checkbox"] {
-            -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
-            border: 1px solid var(--neon-blue); border-radius: 3px;
-            background: rgba(0, 243, 255, 0.1); cursor: pointer; position: relative;
-        }
-        .setting-item input[type="checkbox"]:checked {
-            background: var(--neon-blue); box-shadow: 0 0 8px var(--neon-blue);
-        }
-        .setting-item input[type="checkbox"]:checked::after {
-            content: '✓'; position: absolute; top: -2px; left: 2px;
-            color: #000; font-size: 14px; line-height: 1;
-        }
-
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.8; } }
     </style>
 </head>
 <body>
@@ -374,12 +294,21 @@
 <button id="settings-button" aria-label="Ayarlar">⚙️</button>
 
 <div id="settings-panel">
+    
     <div class="setting-item">
-        <span>SES SEVİYESİ:</span>
+        <span>EFEKT SES SEVİYESİ:</span>
         <span id="volume-label">100</span>
     </div>
     <div id="volume-control">
         <input type="range" id="volume-range" min="0" max="100" value="100">
+    </div>
+
+    <div class="setting-item">
+        <span>MÜZİK SES SEVİYESİ:</span>
+        <span id="music-volume-label">100</span>
+    </div>
+    <div id="music-volume-control">
+        <input type="range" id="music-volume-range" min="0" max="100" value="50">
     </div>
 
     <div class="setting-item">
@@ -396,6 +325,7 @@
 const DENO_API_URL = 'https://junkas1-mistake-68.deno.dev'; 
 
 const KELIMELER = [
+    // Kelime listesi
     "masa","sandalye","bilgisayar","telefon","kalem","defter","kitap","çanta","lamba","ayna",
     "bardak","tabak","çatal","kaşık","bıçak","televizyon","kumanda","yastık","yorgan","çarşaf",
     "halı","perde","dolap","çekmece","kıyafet","gömlek","pantolon","ceket","ayakkabı","çorap",
@@ -426,15 +356,102 @@ const KELIMELER = [
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const volumeRange = document.getElementById('volume-range');
 const volumeLabel = document.getElementById('volume-label');
-let masterGain = audioCtx.createGain();
-masterGain.connect(audioCtx.destination);
+const musicVolumeRange = document.getElementById('music-volume-range');
+const musicVolumeLabel = document.getElementById('music-volume-label');
 
-function updateVolume() {
+let masterGain = audioCtx.createGain(); // Efektler için
+let musicGain = audioCtx.createGain(); // Müzik için
+masterGain.connect(audioCtx.destination);
+musicGain.connect(audioCtx.destination);
+
+// Retro Wave Müzik Jeneratörü
+let musicOscillator, musicFilter, musicLFO, musicPatternIndex = 0;
+const musicTempo = 120; // BPM
+const musicBaseFreq = 60; 
+
+function startMusic() {
+    if (musicOscillator) return; 
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+    
+    // Temel Ses
+    musicOscillator = audioCtx.createOscillator();
+    musicOscillator.type = 'sawtooth';
+    
+    // Filtre (Synth Pad sesi için)
+    musicFilter = audioCtx.createBiquadFilter();
+    musicFilter.type = 'lowpass';
+    musicFilter.frequency.setValueAtTime(3000, audioCtx.currentTime);
+    musicFilter.Q.setValueAtTime(1, audioCtx.currentTime); 
+    
+    // LFO (Hafif bir titreme/modülasyon için)
+    musicLFO = audioCtx.createOscillator();
+    musicLFO.type = 'sine';
+    musicLFO.frequency.setValueAtTime(0.2, audioCtx.currentTime); 
+    
+    // Bağlantılar
+    musicOscillator.connect(musicFilter);
+    musicLFO.connect(musicFilter.frequency); // LFO frekansı modüle etsin (Çok az etki)
+    
+    musicFilter.connect(musicGain);
+    musicLFO.start(0);
+    musicOscillator.start(0);
+
+    // Müzik Döngüsü
+    scheduleNote();
+}
+
+function updateMusicTempo() {
+    // Seviyeye bağlı tempo artışı (Çok hızlı olmasın diye sınırlı)
+    const newTempo = musicTempo + Math.min(60, (state.level - 1) * 3);
+    const interval = 60 / newTempo; // Bir vuruş saniyesi
+    return interval;
+}
+
+function scheduleNote() {
+    const interval = updateMusicTempo();
+    const currentTime = audioCtx.currentTime;
+    
+    // Basit bir 4 vuruşlu kalıp (C-G-A-F akor dizisine benzer)
+    const notes = [musicBaseFreq * 2, musicBaseFreq * 3 / 2, musicBaseFreq * 5 / 4, musicBaseFreq * 4 / 3]; 
+    const currentNoteFreq = notes[musicPatternIndex % 4];
+    
+    // Ana notayı çal (pitch)
+    musicOscillator.frequency.setValueAtTime(currentNoteFreq, currentTime);
+
+    // Filter Sweep (Hafif bir hareket)
+    musicFilter.frequency.linearRampToValueAtTime(3000, currentTime + interval * 0.5);
+    musicFilter.frequency.linearRampToValueAtTime(2000, currentTime + interval * 0.95);
+
+    musicPatternIndex++;
+    if (state.active) {
+        // Bir sonraki notayı zamanla
+        setTimeout(scheduleNote, interval * 1000); 
+    }
+}
+
+function stopMusic() {
+    if (musicOscillator) {
+        musicOscillator.stop(audioCtx.currentTime);
+        musicOscillator = null;
+        musicLFO.stop(audioCtx.currentTime);
+        musicLFO = null;
+    }
+}
+
+function updateEffectVolume() {
     const vol = parseInt(volumeRange.value, 10);
     const gainValue = vol / 100;
     masterGain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
     volumeLabel.innerText = vol;
-    localStorage.setItem('gameVolume', vol);
+    localStorage.setItem('gameEffectVolume', vol);
+}
+
+function updateMusicVolume() {
+    const vol = parseInt(musicVolumeRange.value, 10);
+    const gainValue = vol / 100 * 0.5; // Maksimum ses seviyesini yarıya indirdik
+    musicGain.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+    musicVolumeLabel.innerText = vol;
+    localStorage.setItem('gameMusicVolume', vol);
 }
 
 function playSound(type) {
@@ -480,19 +497,28 @@ function playSound(type) {
     }
 }
 
-const savedVolume = localStorage.getItem('gameVolume');
-if (savedVolume !== null) {
-    volumeRange.value = savedVolume;
+// Ses seviyelerini yükle
+const savedEffectVolume = localStorage.getItem('gameEffectVolume');
+if (savedEffectVolume !== null) {
+    volumeRange.value = savedEffectVolume;
 }
-updateVolume(); 
-volumeRange.addEventListener('input', updateVolume);
+updateEffectVolume(); 
+volumeRange.addEventListener('input', updateEffectVolume);
+
+const savedMusicVolume = localStorage.getItem('gameMusicVolume');
+if (savedMusicVolume !== null) {
+    musicVolumeRange.value = savedMusicVolume;
+}
+updateMusicVolume(); 
+musicVolumeRange.addEventListener('input', updateMusicVolume);
+
 
 // --- CANVAS & STATE ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let w, h;
 
-// Matrix Yağmuru için değişkenler
+// Matrix Yağmuru için değişkenler (Aynı Kaldı)
 let columns, drops;
 const FONT_SIZE = 15;
 const CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+=-{}[]:;"\'<>,.?/|\\ğüşiöçĞÜŞİÖÇ'; 
@@ -519,7 +545,6 @@ function drawMatrix(dt) {
         const drop = drops[i];
         const x = i * FONT_SIZE;
         const y = drop.y;
-        
         const char = CHARS[drop.charIndex];
         
         ctx.fillStyle = 'var(--neon-red)'; 
@@ -562,7 +587,7 @@ let state = {
     activeWords: [],
     particles: [],
     lasers: [], 
-    timeScale: 1.0,
+    timeScale: 1.0, // Oyun hızı
     lastTime: 0,
     spawnTimer: 0,
     isPausedForLevel: false, 
@@ -584,133 +609,14 @@ function getErrorMultiplier() {
     return Math.pow(1.05, state.errors);
 }
 
-// (LevelTransition, Laser, Particle, Word sınıfları önceki kodla aynı kalacaktır.)
-
-class LevelTransition {
-    constructor(level) {
-        this.text = `BÖLÜM ${level}`;
-        this.life = 0; 
-        this.duration = 120;
-    }
-
-    update(dt) {
-        if (this.life < this.duration) {
-            this.life += dt * 3; 
-            return false;
-        }
-        return true; 
-    }
-
-    draw() {
-        const progress = Math.min(1, this.life / this.duration);
-        let alpha = 0;
-
-        if (progress < 0.25) { 
-            alpha = progress * 4;
-        } else if (progress < 0.75) { 
-            alpha = 1;
-        } else { 
-            alpha = 1 - ((progress - 0.75) * 4);
-        }
-
-        ctx.font = "bold 100px " + getComputedStyle(document.body).getPropertyValue('--font-main');
-        ctx.textAlign = "center";
-        ctx.fillStyle = `rgba(0, 243, 255, ${alpha})`;
-        ctx.shadowColor = `rgba(0, 243, 255, ${alpha})`;
-        ctx.shadowBlur = 40 * alpha;
-        
-        ctx.fillText(this.text, w / 2, h / 2);
-        
-        ctx.shadowBlur = 0;
-        ctx.textAlign = "left";
-    }
-}
-
-class Laser {
-    constructor(startX, startY, targetX, targetY, targetWord, targetIndex) {
-        this.x = startX; this.y = startY; 
-        this.targetX = targetX; this.targetY = targetY;
-        this.targetWord = targetWord; this.targetIndex = targetIndex; 
-        this.speed = 40; 
-        const dx = targetX - startX;
-        const dy = targetY - startY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        this.vx = (dx / dist) * this.speed;
-        this.vy = (dy / dist) * this.speed;
-        this.life = dist; 
-        this.initialLife = dist;
-    }
-    update(dt) {
-        const moveDist = this.speed * dt;
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
-        this.life -= moveDist;
-        if (this.life <= this.initialLife * 0.05) { 
-            this.targetWord.hitEffect[this.targetIndex] = 10; 
-            return true; 
-        }
-        return false;
-    }
-    draw() {
-        ctx.beginPath();
-        ctx.moveTo(this.x, this.y);
-        ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
-        ctx.strokeStyle = '#ff0055'; 
-        ctx.lineWidth = 3;
-        ctx.shadowColor = '#ff0055';
-        ctx.shadowBlur = 10;
-        ctx.stroke();
-        ctx.shadowBlur = 0;
-    }
-}
-
-class Particle {
-    constructor(x, y, color, type) {
-        this.x = x; this.y = y; this.type = type;
-        this.life = 1.0;
-        if (type === 'sand') {
-            this.vx = (Math.random() - 0.5) * 2;
-            this.vy = Math.random() * 3 + 2;
-            this.size = Math.random() * 3 + 1;
-            this.color = color;
-            this.gravity = 0.2;
-        } else { 
-            const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 10 + 2;
-            this.vx = Math.cos(angle) * speed;
-            this.vy = Math.sin(angle) * speed;
-            this.size = Math.random() * 6 + 2;
-            this.color = `hsl(${Math.random()*40 + 340}, 100%, 50%)`;
-            this.gravity = 0.1;
-            this.friction = 0.95;
-        }
-    }
-    update(dt) {
-        const t = dt * state.timeScale;
-        this.x += this.vx * t;
-        this.y += this.vy * t;
-        if (this.type === 'sand') {
-            this.vy += this.gravity * t;
-            this.life -= 0.015 * t;
-        } else {
-            this.vx *= this.friction; this.vy *= this.friction;
-            this.life -= 0.02 * state.timeScale;
-        }
-    }
-    draw() {
-        ctx.globalAlpha = this.life;
-        ctx.fillStyle = this.color;
-        ctx.beginPath(); ctx.rect(this.x, this.y, this.size, this.size); ctx.fill();
-        ctx.globalAlpha = 1;
-    }
-}
-
+// Kelime Sınıfı
 class Word {
     constructor(text) {
         this.text = text;
         this.index = 0;
         ctx.font = "bold 30px " + getComputedStyle(document.body).getPropertyValue('--font-main');
         this.width = ctx.measureText(text).width;
+        // ✅ DÜZELTME: Kelimenin her zaman ekranın en üstünde (y = -50) başlaması sağlanır.
         this.x = Math.random() * (w - this.width - 100) + 50;
         this.y = -50; 
         this.speed = 1.5 + (state.level * 0.15);
@@ -719,6 +625,7 @@ class Word {
     update(dt) {
         const errorMultiplier = getErrorMultiplier();
         if (!state.isPausedForLevel || state.settings.skipWait) {
+            // Hız çarpanı (timeScale) ve hata çarpanı uygulanır
             this.y += this.speed * dt * state.timeScale * errorMultiplier; 
         }
         for(let i=0; i<this.hitEffect.length; i++) {
@@ -766,6 +673,124 @@ class Word {
         }
     }
 }
+// Diğer sınıflar (LevelTransition, Laser, Particle) aynı kalır...
+class LevelTransition {
+    constructor(level) {
+        this.text = `BÖLÜM ${level}`;
+        this.life = 0; 
+        this.duration = 120;
+    }
+
+    update(dt) {
+        if (this.life < this.duration) {
+            this.life += dt * 3; 
+            return false;
+        }
+        return true; 
+    }
+
+    draw() {
+        const progress = Math.min(1, this.life / this.duration);
+        let alpha = 0;
+
+        if (progress < 0.25) { 
+            alpha = progress * 4;
+        } else if (progress < 0.75) { 
+            alpha = 1;
+        } else { 
+            alpha = 1 - ((progress - 0.75) * 4);
+        }
+
+        ctx.font = "bold 100px " + getComputedStyle(document.body).getPropertyValue('--font-main');
+        ctx.textAlign = "center";
+        ctx.fillStyle = `rgba(0, 243, 255, ${alpha})`;
+        ctx.shadowColor = `rgba(0, 243, 255, ${alpha})`;
+        ctx.shadowBlur = 40 * alpha;
+        
+        ctx.fillText(this.text, w / 2, h / 2);
+        
+        ctx.shadowBlur = 0;
+        ctx.textAlign = "left";
+    }
+}
+class Laser {
+    constructor(startX, startY, targetX, targetY, targetWord, targetIndex) {
+        this.x = startX; this.y = startY; 
+        this.targetX = targetX; this.targetY = targetY;
+        this.targetWord = targetWord; this.targetIndex = targetIndex; 
+        this.speed = 40; 
+        const dx = targetX - startX;
+        const dy = targetY - startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+        this.life = dist; 
+        this.initialLife = dist;
+    }
+    update(dt) {
+        const moveDist = this.speed * dt;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        this.life -= moveDist;
+        if (this.life <= this.initialLife * 0.05) { 
+            this.targetWord.hitEffect[this.targetIndex] = 10; 
+            return true; 
+        }
+        return false;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y);
+        ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+        ctx.strokeStyle = '#ff0055'; 
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#ff0055';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
+}
+class Particle {
+    constructor(x, y, color, type) {
+        this.x = x; this.y = y; this.type = type;
+        this.life = 1.0;
+        if (type === 'sand') {
+            this.vx = (Math.random() - 0.5) * 2;
+            this.vy = Math.random() * 3 + 2;
+            this.size = Math.random() * 3 + 1;
+            this.color = color;
+            this.gravity = 0.2;
+        } else { 
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 10 + 2;
+            this.vx = Math.cos(angle) * speed;
+            this.vy = Math.sin(angle) * speed;
+            this.size = Math.random() * 6 + 2;
+            this.color = `hsl(${Math.random()*40 + 340}, 100%, 50%)`;
+            this.gravity = 0.1;
+            this.friction = 0.95;
+        }
+    }
+    update(dt) {
+        const t = dt * state.timeScale;
+        this.x += this.vx * t;
+        this.y += this.vy * t;
+        if (this.type === 'sand') {
+            this.vy += this.gravity * t;
+            this.life -= 0.015 * t;
+        } else {
+            this.vx *= this.friction; this.vy *= this.friction;
+            this.life -= 0.02 * state.timeScale;
+        }
+    }
+    draw() {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath(); ctx.rect(this.x, this.y, this.size, this.size); ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+}
+
 
 // --- OYUN FONKSİYONLARI ---
 
@@ -779,6 +804,9 @@ function updateHUD() {
 }
 
 function initGame() {
+    // Müzik Başlat
+    startMusic();
+    
     state.active = true;
     state.gameOver = false;
     state.level = 1;
@@ -798,7 +826,7 @@ function initGame() {
     document.getElementById('start-screen').classList.remove('active');
     document.getElementById('game-over-screen').classList.remove('active');
     document.getElementById('go-content').classList.remove('visible');
-    document.getElementById('hud').style.display = 'flex'; // HUD'ı göster
+    document.getElementById('hud').style.display = 'flex'; 
     document.getElementById('settings-button').style.display = 'none'; 
     settingsPanel.classList.remove('open'); 
     
@@ -816,6 +844,11 @@ function nextLevel() {
     playSound('complete');
     updateHUD();
 
+    // ✅ YENİ ÖZELLİK: Her 5 seviyede bir hızı sıfırla
+    if (state.level > 1 && (state.level - 1) % 5 === 0) {
+        state.timeScale = 1.0;
+    }
+
     state.levelTransition = new LevelTransition(state.level);
 
     if (!state.settings.skipWait) {
@@ -828,6 +861,8 @@ function nextLevel() {
 
 function triggerGameOver(x, y) {
     state.gameOver = true;
+    state.active = false; // ✅ DÜZELTME: Oyun döngüsünü durdurmak için aktif durumu kapat
+    stopMusic(); // Müzik durdurulur
     playSound('explosion');
     for(let i=0; i<60; i++) state.particles.push(new Particle(x, y, null, 'fire'));
     
@@ -859,7 +894,6 @@ function spawnWord() {
 // --- ANA DÖNGÜ & ÇİZİM ---
 function loop(timestamp) {
     if (!state.active && !state.gameOver) { 
-        // Sadece başlangıç ekranındayken Matrix'i çiz
         const dt = (timestamp - state.lastTime) / 16.66;
         state.lastTime = timestamp;
         drawMatrix(dt);
@@ -867,20 +901,24 @@ function loop(timestamp) {
         return;
     }
 
-    // Oyun İçi Döngü
     const dt = (timestamp - state.lastTime) / 16.66;
     state.lastTime = timestamp;
 
     if (state.gameOver) {
+        // Oyun biterken yavaşlama efekti
         state.timeScale *= 0.95;
         if (state.timeScale < 0.01) state.timeScale = 0;
+    } else {
+        // Oyun ilerledikçe hızı kademeli artır
+        state.timeScale = Math.min(2.5, state.timeScale + (0.0001 * dt));
     }
-
+    
+    // Matrix'i çizer ve temizler
     ctx.clearRect(0, 0, w, h);
-    drawMatrix(dt); // Oyun devam ederken de Matrix çizilsin
+    drawMatrix(dt); 
 
     // LAZER ÇİZİMİ
-    if(state.active && !state.gameOver) {
+    if(state.active) { // state.gameOver kontrolü artık gerekli değil
         const laserY = h - 100;
         ctx.beginPath();
         ctx.moveTo(0, laserY);
@@ -897,7 +935,8 @@ function loop(timestamp) {
     if (!state.gameOver && (!state.isPausedForLevel || state.settings.skipWait)) {
         state.spawnTimer += dt;
         const errorMultiplier = getErrorMultiplier();
-        const spawnRate = (90 - (state.level * 2)) / errorMultiplier;
+        // Hız çarpanı spawn oranını da etkilesin
+        const spawnRate = (90 - (state.level * 2)) / (errorMultiplier * state.timeScale);
         if (state.spawnTimer > Math.max(30, spawnRate)) {
             spawnWord();
             state.spawnTimer = 0;
@@ -933,17 +972,20 @@ function loop(timestamp) {
         }
     }
 
-
-    if (state.timeScale > 0.001 || state.particles.length > 0 || state.lasers.length > 0 || state.levelTransition) {
+    // ✅ DÜZELTME: Sadece aktifken veya görsel efektler varken devam et
+    if (state.active || state.timeScale > 0.001 || state.particles.length > 0 || state.lasers.length > 0 || state.levelTransition) {
         requestAnimationFrame(loop);
     } else {
-        if(state.active && state.gameOver) state.active = false;
+        // Oyun sonu animasyonları bitti
+        if(state.gameOver && !document.getElementById('game-over-screen').classList.contains('active')) {
+             document.getElementById('game-over-screen').classList.add('active');
+        }
     }
 }
 
 // --- KLAVYE KONTROLÜ ---
 document.addEventListener('keydown', (e) => {
-    // ✅ YENİ ÖZELLİK: Ana ekranda Enter'a basılırsa oyunu başlat
+    // Ana ekranda Enter'a basılırsa oyunu başlat
     if (e.key === 'Enter' && !state.active && !state.gameOver) {
         document.getElementById('btn-start').click();
         return;
@@ -1025,7 +1067,6 @@ async function getGlobalScores() {
     try {
         const response = await fetch(`${DENO_API_URL}/scores`);
         if (!response.ok) throw new Error(`API hatası: Skorlar okunamadı (${response.status}).`);
-        
         const scores = await response.json();
         return scores;
     } catch (error) {
@@ -1083,7 +1124,6 @@ async function updateLeaderboardUI() {
 
     lbBox.innerHTML = '';
     
-    // Başlık satırı
     const headerDiv = document.createElement('div');
     headerDiv.className = 'lb-grid-header';
     headerDiv.innerHTML = `
@@ -1100,7 +1140,6 @@ async function updateLeaderboardUI() {
         return;
     }
     
-    // Sıralama satırları
     limitedScores.forEach((entry, i) => {
         const div = document.createElement('div');
         div.className = 'lb-row';
