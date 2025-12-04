@@ -196,9 +196,9 @@
             opacity: 1; 
         }
 
-        /* ✅ YENİ DÜZENLEME: İsim Girişi Kutusu Stili ve Boşlukları */
+        /* ✅ Düzeltilmiş: İsim Girişi Kutusu Stili ve Boşlukları */
         #player-nick {
-            margin: 25px auto; /* Üstte ve altta boşluk eklendi */
+            margin: 25px auto; 
             padding: 10px 15px;
             font-size: 18px;
             width: 250px;
@@ -220,7 +220,7 @@
         .button-group {
             display: flex;
             justify-content: center;
-            margin-top: 15px; /* Butonlar ve isim kutusu arasına boşluk */
+            margin-top: 15px; 
         }
         /* --- AYARLAR --- */
         #settings-button {
@@ -590,7 +590,8 @@ class Word {
         this.width = ctx.measureText(text).width;
         this.x = Math.random() * (w - this.width - 100) + 50;
         this.y = -50; 
-        this.speed = 1.5 + (state.level * 0.15);
+        // ✅ DEĞİŞİKLİK: Düşme hızı mevcut hızın yarısı kadar yavaşlatıldı.
+        this.speed = (1.5 + (state.level * 0.15)) / 2; 
         this.hitEffect = new Array(this.text.length).fill(0);
         this.initialX = this.x; 
     }
