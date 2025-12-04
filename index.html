@@ -190,13 +190,38 @@
             box-shadow: 0 0 50px var(--neon-pink);
             text-align: center;
             opacity: 0;
-            /* ✅ Düzeltme: Oyun sonu ekranı geçiş süresi kısaltıldı */
             transition: opacity 0.5s; 
         }
         .go-content.visible {
-            opacity: 1; /* ✅ Düzeltme: görünürlük sınıfı eklendi */
+            opacity: 1; 
+        }
+
+        /* ✅ YENİ DÜZENLEME: İsim Girişi Kutusu Stili ve Boşlukları */
+        #player-nick {
+            margin: 25px auto; /* Üstte ve altta boşluk eklendi */
+            padding: 10px 15px;
+            font-size: 18px;
+            width: 250px;
+            text-align: center;
+            font-family: var(--font-main);
+            color: var(--neon-blue);
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #player-nick:focus {
+            box-shadow: 0 0 25px var(--neon-pink);
+            border-color: var(--neon-pink);
         }
         
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px; /* Butonlar ve isim kutusu arasına boşluk */
+        }
         /* --- AYARLAR --- */
         #settings-button {
             position: fixed;
@@ -355,14 +380,9 @@ const KELIMELER = [
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 const volumeRange = document.getElementById('volume-range');
 const volumeLabel = document.getElementById('volume-label');
-// const musicVolumeRange = document.getElementById('music-volume-range'); // KALDIRILDI
-// const musicVolumeLabel = document.getElementById('music-volume-label'); // KALDIRILDI
 
 let masterGain = audioCtx.createGain(); 
 masterGain.connect(audioCtx.destination);
-// Müzik Gain KALDIRILDI
-
-// Müzik Jeneratörü Fonksiyonları KALDIRILDI: startMusic, stopMusic, scheduleNote, updateMusicTempo
 
 
 function updateEffectVolume() {
@@ -373,7 +393,6 @@ function updateEffectVolume() {
     localStorage.setItem('gameEffectVolume', vol);
 }
 
-// updateMusicVolume KALDIRILDI
 
 function playSound(type) {
     if (masterGain.gain.value === 0) return;
@@ -425,9 +444,7 @@ if (savedEffectVolume !== null) {
 }
 updateEffectVolume(); 
 
-// Müzik ses ayarı yükleme KALDIRILDI
 volumeRange.addEventListener('input', updateEffectVolume);
-// musicVolumeRange event listener KALDIRILDI
 
 
 // --- CANVAS & STATE ---
@@ -524,8 +541,6 @@ resize();
 function getErrorMultiplier() {
     return Math.pow(1.05, state.errors);
 }
-
-// --- ScoreParticle sınıfı KALDIRILDI ---
 
 class LevelTransition {
     constructor(level) {
@@ -626,7 +641,6 @@ class Word {
             ctx.shadowBlur = 0; 
         }
     }
-    // explodeAsScoreParticles KALDIRILDI
 }
 
 class Laser {
@@ -720,7 +734,6 @@ function updateHUD() {
 }
 
 function initGame() {
-    // Müzik başlangıcı KALDIRILDI
     
     state.active = true;
     state.gameOver = false;
@@ -740,9 +753,8 @@ function initGame() {
     
     document.getElementById('start-screen').classList.remove('active');
     document.getElementById('game-over-screen').classList.remove('active');
-    // document.getElementById('go-content').classList.remove('visible'); // Oyun sonu ekranı düzeltmesi
+    document.getElementById('go-content').classList.remove('visible'); 
     document.getElementById('hud').style.display = 'flex'; 
-    // document.getElementById('settings-button').style.display = 'none'; // Ayarlar çarkı düzeltmesi
     settingsPanel.classList.remove('open'); 
     
     document.getElementById('btn-save').disabled = false;
@@ -776,12 +788,10 @@ function nextLevel() {
 function triggerGameOver(x, y) {
     state.gameOver = true;
     state.active = false; 
-    // stopMusic() KALDIRILDI
     playSound('explosion');
     for(let i=0; i<60; i++) state.particles.push(new Particle(x, y, null, 'fire'));
     
     document.getElementById('hud').style.display = 'none';
-    // document.getElementById('settings-button').style.display = 'block'; // Ayarlar çarkı düzeltmesi: zaten hep görünür
     
     const goScreen = document.getElementById('game-over-screen');
     goScreen.style.background = "rgba(0,0,0,0.85)";
@@ -792,7 +802,6 @@ function triggerGameOver(x, y) {
     document.getElementById('final-errors').innerText = state.errors;
     document.getElementById('final-multiplier').innerText = getErrorMultiplier().toFixed(2) + "x";
 
-    // ✅ Düzeltme: Oyun sonu içeriğini görünür yap
     setTimeout(() => { 
         document.getElementById('go-content').classList.add('visible'); 
     }, 1000);
@@ -929,7 +938,6 @@ document.addEventListener('keydown', (e) => {
             const errorMultiplier = getErrorMultiplier();
             state.score += 10 * state.level * errorMultiplier;
             state.wordsCompleted++;
-            // target.explodeAsScoreParticles() KALDIRILDI
             playSound('complete');
             state.activeWords = state.activeWords.filter(w => w !== target);
             if (state.wordsCompleted >= state.wordsTarget) nextLevel();
