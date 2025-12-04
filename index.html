@@ -67,12 +67,13 @@
             pointer-events: auto;
         }
         
+        /* ⚙️ SIRALAMA PENCERESİ GÜNCELLEMELERİ ⚙️ */
         .right-panel {
             position: absolute;
             top: 50%;
-            left: 10%; 
+            left: 5%; /* Sola yanaştırıldı (10% -> 5%) */
             transform: translateY(-50%);
-            width: 300px;
+            width: 400px; /* Genişletildi (300px -> 400px) */
             max-height: 400px; 
             background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column;
@@ -81,13 +82,20 @@
             pointer-events: auto;
         }
         
+        /* 🌟 MISTAKE BAŞLIK ANİMASYONU TANIMI 🌟 */
+        @keyframes pulse {
+            0% { opacity: 0.7; text-shadow: 0 0 10px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 50px var(--neon-pink); }
+            50% { opacity: 1; text-shadow: 0 0 20px var(--neon-pink), 0 0 50px var(--neon-pink), 0 0 80px var(--neon-pink); }
+            100% { opacity: 0.7; text-shadow: 0 0 10px var(--neon-pink), 0 0 30px var(--neon-pink), 0 0 50px var(--neon-pink); }
+        }
+
         h1 {
             font-size: clamp(60px, 8vw, 120px);
             background: linear-gradient(to bottom, #fff, var(--neon-pink));
             -webkit-background-clip: text; color: transparent;
             text-shadow: 0 0 50px var(--neon-pink);
             margin-bottom: 30px;
-            animation: pulse 3s infinite;
+            animation: pulse 3s infinite; /* Başlık animasyonu */
             font-family: 'Orbitron', sans-serif;
         }
 
@@ -161,45 +169,73 @@
             font-size: 13px; 
         }
 
+        /* Sütun genişliği ayarları güncellendi (daha fazla isim alanı için) */
         .lb-grid-header, .lb-row {
             display: grid;
-            grid-template-columns: 30px 1fr 60px 40px 40px; 
+            grid-template-columns: 30px 1fr 70px 40px 45px; /* Sütunlar: Sıra(30) İsim(Geniş) Puan(70) Hata(40) Bölüm(45) */
             padding: 5px 0;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            align-items: center; /* Dikeyde hizalama */
+            align-items: center; 
         }
+        
         .lb-rank { color: var(--neon-pink); font-weight: bold; }
-        .lb-nick { color: #ddd; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; transition: 0.3s; }
+        
+        /* ⚪ İlk 3 hariç isimler beyaz (İSTEK: 1) */
+        .lb-nick { 
+            color: #fff; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            transition: 0.3s; 
+        }
         .lb-score { color: var(--neon-blue); text-align: right; font-weight: bold; }
         .lb-errors { color: var(--neon-red); text-align: center; }
         .lb-level { color: #00f3ff; text-align: center; }
 
 
-        /* 👑 ÖZEL İLK 3 STİLLERİ 👑 */
+        /* 👑 İLK 3 ANİMASYON TANIMLARI 👑 */
+        @keyframes pulse-gold {
+            0% { text-shadow: 0 0 5px #ffcc00, 0 0 15px rgba(255, 204, 0, 0.7); opacity: 0.8; }
+            50% { text-shadow: 0 0 10px #ffcc00, 0 0 30px rgba(255, 204, 0, 0.9); opacity: 1.0; }
+            100% { text-shadow: 0 0 5px #ffcc00, 0 0 15px rgba(255, 204, 0, 0.7); opacity: 0.8; }
+        }
+        @keyframes pulse-silver {
+            0% { text-shadow: 0 0 4px #c0c0c0, 0 0 10px rgba(192, 192, 192, 0.6); opacity: 0.8; }
+            50% { text-shadow: 0 0 8px #c0c0c0, 0 0 20px rgba(192, 192, 192, 0.8); opacity: 1.0; }
+            100% { text-shadow: 0 0 4px #c0c0c0, 0 0 10px rgba(192, 192, 192, 0.6); opacity: 0.8; }
+        }
+        @keyframes pulse-bronze {
+            0% { text-shadow: 0 0 3px #cd7f32, 0 0 8px rgba(205, 127, 50, 0.5); opacity: 0.8; }
+            50% { text-shadow: 0 0 6px #cd7f32, 0 0 15px rgba(205, 127, 50, 0.7); opacity: 1.0; }
+            100% { text-shadow: 0 0 3px #cd7f32, 0 0 8px rgba(205, 127, 50, 0.5); opacity: 0.8; }
+        }
+        
+        /* 1. Sıra: Altın Neon ve Animasyon */
         .lb-nick-1 {
-            color: #ffcc00; /* Altın */
+            color: #ffcc00; 
             font-size: 16px;
-            text-shadow: 0 0 15px #ffcc00, 0 0 25px rgba(255, 204, 0, 0.7);
             transform: scale(1.1);
+            animation: pulse-gold 2s infinite alternate;
         }
         
+        /* 2. Sıra: Gümüş Neon ve Animasyon */
         .lb-nick-2 {
-            color: #c0c0c0; /* Gümüş */
+            color: #c0c0c0; 
             font-size: 15px;
-            text-shadow: 0 0 12px #c0c0c0, 0 0 20px rgba(192, 192, 192, 0.6);
+            animation: pulse-silver 2.2s infinite alternate;
         }
         
+        /* 3. Sıra: Bronz Neon ve Animasyon */
         .lb-nick-3 {
-            color: #cd7f32; /* Bronz */
+            color: #cd7f32; 
             font-size: 14px;
-            text-shadow: 0 0 10px #cd7f32, 0 0 15px rgba(205, 127, 50, 0.5);
+            animation: pulse-bronze 2.4s infinite alternate;
         }
         
-        /* Özel stillerin uygulandığı satırların içeriği dikeyde daha iyi hizalanmalı */
         .lb-row-top3 {
-             height: 30px; /* Satır yüksekliğini artır */
+             height: 30px; 
         }
         
         /* --- OYUN SONU EKRANI --- */
