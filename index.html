@@ -25,7 +25,7 @@
             height: 100vh;
         }
 
-        /* ✅ DÜZENLEME: Canvas tüm ekranı kaplar ve en alt katmandadır */
+        /* Canvas tüm ekranı kaplar ve en alt katmandadır */
         canvas { 
             position: fixed; top: 0; left: 0; 
             z-index: 1; 
@@ -53,16 +53,15 @@
         #start-screen {
             flex-direction: row;
             background: radial-gradient(circle at center, rgba(0,0,0,0.4), #000000); 
-            justify-content: center; /* Merkezi hizalama için */
-            align-items: center; /* Merkezi hizalama için */
+            justify-content: center; 
+            align-items: center; 
         }
 
-        /* ✅ DÜZENLEME: MISTAKE ve BAŞLAT Butonunu Tam Ortalamak için Container */
+        /* MISTAKE ve BAŞLAT Butonunu Tam Ortalamak için Container */
         .center-content {
             position: absolute;
             left: 50%;
             top: 50%;
-            /* Kendi boyutunun yarısı kadar geri çek - Ekranın tam ortası */
             transform: translate(-50%, -50%); 
             display: flex;
             flex-direction: column;
@@ -70,29 +69,24 @@
             pointer-events: auto;
         }
         
-        /* ✅ DÜZENLEME: Sıralama panelini sol ortaya sabitle */
+        /* Sıralama panelini sol ortaya sabitle */
         .right-panel {
             position: absolute;
             top: 50%;
-            left: 10%; /* Sol taraftan biraz içeride */
+            left: 10%; 
             transform: translateY(-50%);
             
-            /* Boyutlar önceki haliyle aynı */
             width: 300px;
-            max-height: 400px; /* Küçük kalması için max yükseklik */
+            max-height: 400px; 
             
             background: rgba(0, 0, 0, 0.85);
             display: flex; flex-direction: column;
             padding: 20px 15px; 
-            /* ✅ DÜZENLEME: Mavi çizgi (border-left) kaldırıldı */
-            border: 2px solid var(--neon-blue); /* Sadece çerçeve (köşesiz dörtgen) kalsın */
+            border: 2px solid var(--neon-blue); 
             pointer-events: auto;
         }
         
-        /* Aşağıdaki left-panel artık kullanılmayacak, center-content tüm işi yapıyor. */
-        .left-panel {
-            display: none; /* Gizle */
-        }
+        .left-panel { display: none; }
 
         h1 {
             font-size: clamp(60px, 8vw, 120px);
@@ -139,9 +133,79 @@
             box-shadow: 0 0 50px var(--neon-pink);
         }
 
+        /* --- HUD (Oyun İçi Arayüz) --- */
+        #hud {
+            position: fixed; 
+            top: 20px;
+            right: 20px; 
+            /* ✅ DÜZENLEME: Eski (dikey) haline döndürüldü */
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-end;
+            z-index: 100;
+            font-size: 16px;
+            display: none; /* Varsayılan olarak gizli */
+            pointer-events: none;
+        }
+
+        .hud-box {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            margin-bottom: 8px; /* Dikey boşluk */
+            border-right: 2px solid var(--neon-blue);
+            border-top: 1px solid rgba(0,243,255,0.2);
+            border-bottom: 1px solid rgba(0,243,255,0.2);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+            text-transform: uppercase;
+        }
+        
+        .error-count { color: var(--neon-red); }
+        .multiplier { color: var(--neon-pink); }
+        
+        /* --- OYUN SONU EKRANI (Game Over) --- */
+        #game-over-screen {
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+        }
+        
+        .go-content {
+            /* ✅ DÜZENLEME: Oyun sonu ekranı eski (merkezi dikey) haline döndürüldü */
+            background: rgba(0, 0, 0, 0.95);
+            padding: 40px 60px;
+            border: 3px solid var(--neon-pink);
+            border-radius: 10px;
+            box-shadow: 0 0 50px var(--neon-pink);
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .go-content.visible { opacity: 1; }
+
+        #player-nick {
+            margin: 20px 0;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-family: var(--font-main);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--neon-blue);
+            color: #fff;
+            text-align: center;
+            outline: none;
+            width: 200px;
+            border-radius: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
         /* --- SIRALAMA TABLOSU --- */
         #leaderboard-box {
-            max-height: 340px; /* 10 satır ve başlığa yetecek kadar küçültüldü */
+            max-height: 340px; 
             overflow-y: hidden; 
             border: 1px solid var(--neon-blue);
             background: rgba(0, 243, 255, 0.05);
@@ -176,9 +240,8 @@
         .lb-level { color: #00f3ff; text-align: center; }
 
 
-        /* --- AYARLAR BUTONU VE PENCERESİ CSS (Geri Getirildi) --- */
+        /* --- AYARLAR BUTONU --- */
         #settings-button {
-            /* ✅ DÜZENLEME: Geri getirildi ve konum korundu */
             position: fixed;
             bottom: 20px;
             left: 20px;
@@ -247,7 +310,6 @@
             border-radius: 50%; background: var(--neon-blue); cursor: pointer;
             box-shadow: 0 0 10px var(--neon-blue);
         }
-        /* ... Diğer ayar stilleri (Checkbox vb.) ... */
         .setting-item input[type="checkbox"] {
             -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
             border: 1px solid var(--neon-blue); border-radius: 3px;
@@ -448,7 +510,6 @@ function initMatrix() {
 }
 
 function drawMatrix(dt) {
-    // ✅ DÜZENLEME: İz bırakma için daha az opaklık (daha uzun iz)
     ctx.fillStyle = 'rgba(5, 5, 5, 0.05)'; 
     ctx.fillRect(0, 0, w, h);
     
@@ -461,14 +522,11 @@ function drawMatrix(dt) {
         
         const char = CHARS[drop.charIndex];
         
-        // Parlak Kırmızı (Ön karakter)
         ctx.fillStyle = 'var(--neon-red)'; 
-        // ✅ DÜZENLEME: Parlaklık artırıldı
         ctx.shadowColor = 'var(--neon-red)';
         ctx.shadowBlur = 8;
         ctx.fillText(char, x, y);
         
-        // Koyu Kırmızı (İz) - Daha belirgin izler
         const trailLength = 12; 
         for(let j=1; j<trailLength; j++) {
             const trailAlpha = 0.3 * (1 - (j / trailLength)); 
@@ -515,7 +573,6 @@ let state = {
 };
 
 function resize() {
-    // ✅ DÜZENLEME: Ekran boyutlarını yeniden ayarla
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
     initMatrix(); 
@@ -741,7 +798,7 @@ function initGame() {
     document.getElementById('start-screen').classList.remove('active');
     document.getElementById('game-over-screen').classList.remove('active');
     document.getElementById('go-content').classList.remove('visible');
-    document.getElementById('hud').style.display = 'flex';
+    document.getElementById('hud').style.display = 'flex'; // HUD'ı göster
     document.getElementById('settings-button').style.display = 'none'; 
     settingsPanel.classList.remove('open'); 
     
@@ -819,12 +876,9 @@ function loop(timestamp) {
         if (state.timeScale < 0.01) state.timeScale = 0;
     }
 
-    // Matrix animasyonu burada çizilmeyecek, sadece oyuna özel öğeler çizilecek.
     ctx.clearRect(0, 0, w, h);
+    drawMatrix(dt); // Oyun devam ederken de Matrix çizilsin
 
-    // Matrix animasyonu tüm ekranı kapladığı için burada temizlemeye gerek yok, 
-    // ancak oyun alanını korumak için isterseniz arka planı yine de karartabilirsiniz.
-    
     // LAZER ÇİZİMİ
     if(state.active && !state.gameOver) {
         const laserY = h - 100;
@@ -889,6 +943,12 @@ function loop(timestamp) {
 
 // --- KLAVYE KONTROLÜ ---
 document.addEventListener('keydown', (e) => {
+    // ✅ YENİ ÖZELLİK: Ana ekranda Enter'a basılırsa oyunu başlat
+    if (e.key === 'Enter' && !state.active && !state.gameOver) {
+        document.getElementById('btn-start').click();
+        return;
+    }
+    
     if (!state.active || state.gameOver || state.isPausedForLevel && !state.settings.skipWait) return;
     const key = e.key.toLowerCase();
     
