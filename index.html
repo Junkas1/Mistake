@@ -225,19 +225,20 @@
             bottom: 20px;
             left: 20px;
             z-index: 15;
-            width: 50px;
-            height: 50px;
+            /* ✅ DÜZENLEME: Arka plan kutusu kaldırıldı */
+            width: auto; 
+            height: auto;
+            padding: 0; 
             background: none;
             border: none;
             color: #fff;
             font-size: 30px;
             cursor: pointer;
-            transition: 0.5s; /* Animasyon hızı */
+            transition: transform 0.5s, color 0.3s; 
             pointer-events: auto;
             text-shadow: 0 0 10px var(--neon-blue);
-            /* Başlangıçtaki transform: rotate(60deg) kaldırıldı. */
         }
-        /* ✅ YENİ ÇARK ÜZERİNE GELİNCE DÖNME ANİMASYONU */
+        
         #settings-button:hover {
             transform: rotate(360deg); /* 1 tam tur */
             color: var(--neon-blue);
@@ -245,7 +246,8 @@
         
         #settings-panel {
             position: fixed;
-            bottom: 20px;
+            /* ✅ DÜZENLEME: 80px yukarı kaydırıldı */
+            bottom: 80px; 
             left: 20px;
             width: 300px;
             padding: 15px;
@@ -259,11 +261,10 @@
             opacity: 0;
             transition: transform 0.4s ease-out, opacity 0.4s ease-out;
             
-            pointer-events: none; /* Açılana kadar tıklanamaz */
+            pointer-events: none; 
             z-index: 14;
         }
         
-        /* ✅ YENİ AÇILIŞ ANİMASYONU */
         #settings-panel.open {
             transform: scale(1) rotate(0deg);
             opacity: 1;
@@ -274,15 +275,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /* margin-bottom: 10px; yerine padding ve margin ayrımı */
             padding-bottom: 5px;
             border-bottom: 1px dotted rgba(255, 255, 255, 0.1);
             font-size: 14px;
         }
         
-        /* ✅ DÜZENLEME: İtemler arasına daha fazla boşluk */
         #settings-panel > .setting-item {
-            margin-top: 15px; /* Ayarlar arasında boşluk */
+            /* Ses seviyesini ayarlama çubuğu altındaki boşluk */
+            margin-top: 15px; 
         }
 
         /* Ses Çubuğu Stilleri */
@@ -293,7 +293,8 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 5px;
-            margin-bottom: 10px;
+            /* ✅ DÜZENLEME: Daha fazla boşluk için 20px yapıldı. */
+            margin-bottom: 20px; 
         }
         
         #volume-range {
